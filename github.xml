@@ -1,10 +1,7 @@
 <application>
   <component name="GithubAccounts">
-    <account id="cc65b137-e8e9-47f9-bbf9-07a9bad12b93" name="cubecloud">
+    <account id="a6956e8d-81e2-4807-9c20-54039694aadd" name="cubecloud">
       <server host="github.com" />
     </account>
-  </component>
-  <component name="GithubSettings">
-    <option name="CLONE_GIT_USING_SSH" value="true" />
   </component>
 </application>
