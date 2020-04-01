@@ -8,7 +8,6 @@ def remove_punctuation(corrected_line):
         corrected_line = corrected_line.replace(elem, empty)
     return corrected_line
 
-
 # Вариант БЕЗ использования collections
 # ------------------------------------
 # Убираем повторы и делаем лист с уникальными элементами и возвращаем его
@@ -18,7 +17,6 @@ def keys_list(all_list):
     # конвертируем set обратно в list
     unique_list = (list(list_set))
     return unique_list
-
 
 # заполняем словарь листом с уникальными элементами
 # и считаем тут же число вхождений слова по полному списку
@@ -32,8 +30,6 @@ def keys_counter(all_words):
     # и заносим сразу в словарь +1 по ключу
     for elem in all_words: dict_temp[elem] += 1
     return dict_temp
-
-
 # ------------------------------------
 
 # Основное тело программы
@@ -49,7 +45,6 @@ with open(file_name, 'r', encoding='utf-8') as text_file:
     # Лемматизация
     # импорт библиотеки
     import pymorphy2
-
     morph = pymorphy2.MorphAnalyzer()
     lemma = []
     # лематизируем слова и делаем лист
@@ -77,7 +72,6 @@ with open(file_name, 'r', encoding='utf-8') as text_file:
     print('ТОП 5 разных слов, наиболее часто встречающихся в тексте, с кол-вом повторов')
     print(dict_text[:5])
     print()
-
     # ------------------------------------
     # Считаем и выводим кол-во разных слов
     print('Всего разных слов в словаре')
