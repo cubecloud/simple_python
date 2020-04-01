@@ -3,7 +3,7 @@
 # будет убран позже автоматом
 def remove_punctuation (corrected_line):
     empty = str('')
-    punct_set = {'.',',','?','!','—','«','»','(',')'}
+    punct_set = {'.',',',':','?','!','—','«','»','(',')'}
     for elem in punct_set:
         corrected_line = corrected_line.replace(elem, empty)
     return corrected_line
