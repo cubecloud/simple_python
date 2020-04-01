@@ -36,12 +36,11 @@ def keys_counter (all_words):
 # Инициализируем переменную под list
 splited_line = list()
 # открываем и читаем файл
-file_name = '../text_in.txt'
+file_name = 'text_in.txt'
 with open(file_name, 'r', encoding='utf-8') as text_file:
     for line in text_file:
         splited_line += remove_punctuation(line).split()
     # переводим в нижний регистр
-
     lower_line = list(map(lambda x: x.lower(), splited_line))
     # Лемматизация
     # импорт библиотеки
@@ -52,7 +51,6 @@ with open(file_name, 'r', encoding='utf-8') as text_file:
     for word in lower_line:
         normal_word = morph.parse(word)[0]
         lemma.append(normal_word.normal_form)
-
 # Вариант с использованием collections
 # ------------------------------------
 #     from collections import Counter
@@ -67,6 +65,13 @@ with open(file_name, 'r', encoding='utf-8') as text_file:
     # Сортируем словарь по кол-ву вхождений
     dict_text = sorted(dict_text.items(), key=lambda x: x[1], reverse=True)
     # Выводим 5 первых по кол-ву вхождений слов
+    print ('ТОП 5 разных слов, наиболее часто встречающихся в тексте, с кол-вом повторов')
     print(dict_text [:5])
+    print()
     # Выводим весь словарь
+    print ('Весь словарь созданный из текста и лемматизированный, с кол-вом повторов каждого слова')
     print(dict_text)
+    print()
+    # Считаем и выводим кол-во разных слов
+    print ('Всего разных слов в словаре')
+    print (len(dict_text))
