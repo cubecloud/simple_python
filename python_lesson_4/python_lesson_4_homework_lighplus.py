@@ -1,5 +1,9 @@
+from datetime import datetime
+import re
+
 # открываем и читаем файл
-file_name = 'text_in.txt'
-with open(file_name, 'r', encoding='utf-8') as text_file:
+log_file_name = 'log'
+with open(log_file_name, 'r', encoding='utf-8') as text_file:
     for line in text_file:
-        splited_line += remove_punctuation(line).split()
+        stroka = re.findall(r'(\d+-\d+.\d+.\d+:\d+:\d+,\d+.-.)', line)
+        print(stroka)

@@ -8,12 +8,12 @@
 print('Задача 1')
 print("Вывести на экран циклом пять строк из нулей, причем каждая строка должна быть пронумерована")
 string_length = 80
-qty_of_string = int(3)
+qty_of_string = int(5)
 zero_string=str('')
 for i in range (1,string_length):
     zero_string += '0'
-for k in range (qty_of_string):
-    print (zero_string)
+for k in range (1,qty_of_string+1):
+    print (k, zero_string)
 print()
 
 '''
