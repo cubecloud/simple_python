@@ -30,6 +30,7 @@ def keys_counter(all_words):
     # и заносим сразу в словарь +1 по ключу
     for elem in all_words: dict_temp[elem] += 1
     return dict_temp
+
 # ------------------------------------
 
 # Основное тело программы
@@ -45,6 +46,7 @@ with open(file_name, 'r', encoding='utf-8') as text_file:
     # Лемматизация
     # импорт библиотеки
     import pymorphy2
+
     morph = pymorphy2.MorphAnalyzer()
     lemma = []
     # лематизируем слова и делаем лист
@@ -58,16 +60,23 @@ with open(file_name, 'r', encoding='utf-8') as text_file:
     #     dict_text = Counter(lemma)
     #     # Выводим 5 первых по кол-ву вхождений слов
     #     print ('ТОП 5 разных слов, наиболее часто встречающихся в тексте, с кол-вом повторов')
+    #     # Выводим весь словарь
+    #     print ('Весь словарь созданный из текста и лемматизированный, с кол-вом повторов каждого слова')
+    #     print(dict_text)
+    #     print()
     #     print(Counter(lemma).most_common(5))
     #     print()
     # ------------------------------------
-
     # Вариант БЕЗ использования collections
     # ------------------------------------
     # Делаем словарь с подсчетом вхождений каждого слова
     dict_text = keys_counter(lemma)
     # Сортируем словарь по кол-ву вхождений
     dict_text = sorted(dict_text.items(), key=lambda x: x[1], reverse=True)
+    # Выводим весь словарь
+    print('Весь словарь созданный из текста и лемматизированный, с кол-вом повторов каждого слова')
+    print(dict_text)
+    print()
     # Выводим 5 первых по кол-ву вхождений слов
     print('ТОП 5 разных слов, наиболее часто встречающихся в тексте, с кол-вом повторов')
     print(dict_text[:5])
