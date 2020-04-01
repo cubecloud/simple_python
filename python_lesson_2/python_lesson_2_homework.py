@@ -82,8 +82,7 @@ print()
 print('Задача 5(Б)')
 print("Вывести цифры числа на каждой строчке в обратном порядке")
 integer_number = 212956
-i = 0
-for i in range (len(str(integer_number))):
+for i in range(0,len(str(integer_number))):
     print(str(integer_number)[i])
 print()
 
