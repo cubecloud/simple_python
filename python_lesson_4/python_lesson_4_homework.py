@@ -1,21 +1,19 @@
 import random
-
-
 # Задача 1
 # Напишите функцию (F): на вход список имен и целое число N;
 # на выходе список длины N случайных имен из первого списка
 # могут повторяться, можно взять значения: количество имен 20,
 # N = 100, (рекомендуется использовать функцию random)
 
-
+# Функция создания списка случайных имен на основе другого списка
+# Возвращает список случайных имен, заданной длинны
 def names_list_gen(names, list_length):
     names_list = list()
     for i in range(list_length):
         names_list += [(random.choice(names))]
     return names_list
 
-
-# Убираем повторы и делаем лист с уникальными элементами и возвращаем его
+# Функция. Убираем повторы и делаем лист с уникальными элементами и возвращаем его
 def keys_list(all_list):
     # ковертируем list в set и получаем set из уникальных элементов
     list_set = set(all_list)
@@ -36,6 +34,7 @@ def keys_counter(all_words):
     for elem in all_words: dict_temp[elem] += 1
     return dict_temp
 
+# Возвращаем срез отсортированного словаря по кол-ву
 def top_n(dict, a, n):
     # Сортируем словарь по кол-ву вхождений
     dict = sorted(dict.items(), key=lambda x: x[1], reverse=True)
@@ -44,6 +43,7 @@ def top_n(dict, a, n):
 
 # Задача 2
 # Напишите функцию вывода самого частого имени из списка на выходе функции F;
+# Функция возвращает первую позицию в словаре
 def top_one(names_list):
     # Делаем словарь с подсчетом вхождений каждого имени
     dict_text = keys_counter(names_list)
@@ -53,10 +53,14 @@ def top_one(names_list):
 # Задача 3
 # Напишите функцию вывода самой редкой буквы, с которого начинаются имена в списке на выходе функции F.
 def rare_char(names_list):
+    # инициализируем переменную
     char_list = list()
     for i in range(0, list_length):
+        # создаем лист из первых букв имен
         char_list.append(names_list[i][:1])
+    # создаем словарь из букв с подсчетом кол-ва каждой буквы в списке
     dict_char = keys_counter(char_list)
+    # Выводим пару - самую редкую букву в списке и кол-во ее в списке
     couple = top_n(dict_char, (len(dict_char) - 1), (len(dict_char)))
     return couple
 
@@ -64,24 +68,14 @@ def rare_char(names_list):
 # List имен
 names_ = ["Даша", "Лена", "Марина", "Катя", "Наташа", "Валя", "Женя", "Настя", "Аня", "Оля", "Олег", "Антон",
           "Александр", "Сергей", "Федор", "Андрей", "Тимофей", "Борис", "Илья", "Анатолий", "Максим"]
-
 print()
-print('Введите длину создаваемого списка имен:')
-list_length = 30
-
-while True:
-    try:
-        list_length = int(input())
-        break
-    except (TypeError, ValueError):
-        print("Неправильный ввод")
-
-print('Создаем случайный список имен на основе списка из 10 имен')
+list_length = 100
+print('Создаем случайный список имен на основе списка из 20 имен')
 names_list = names_list_gen(names_, list_length)
 print(names_list)
 print()
 print('ТОП 1 имен, наиболее часто встречающихся с кол-вом повторов')
 print(top_one(names_list))
 print()
-print('Самая редко встречающаяся начальная буква имени.')
+print('Самая редко встречающаяся начальная буква имени')
 print(rare_char(names_list))
