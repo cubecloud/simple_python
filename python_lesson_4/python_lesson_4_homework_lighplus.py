@@ -5,8 +5,8 @@ log_file_name = 'log'
 # # открываем и читаем файл
 with open(log_file_name, 'r', encoding='utf-8') as text_file:
     max_date_str = ''
+    # Читаем строку и сравниваем
     for line in text_file:
-        # Читаем строку и сравниваем
         if line[:22] > max_date_str[:22]:
             max_date_str = line
 # Выводим дату и время последнего лога
@@ -41,7 +41,6 @@ with open(log_file_name, 'r', encoding='utf-8') as text_file:
 # Вариант 3
 import pandas as pd
 log_file = pd.read_csv(log_file_name, sep=' - ', names=['Date_and_Time', 'Application', 'Type', 'Message'], engine = 'python')
-
 print ("Вариант 3")
 print(log_file.sort_values('Date_and_Time',  ascending=False).head(1))
 print()
@@ -53,4 +52,4 @@ file = open(log_file_name, 'rb').readlines()
 for line in file:
     log_dates.append(datetime.datetime.strptime(line.decode().split(' - ')[0], '%Y-%m-%d %H:%M:%S,%f'))
 print ("Вариант 4")
-print (max([c for c in log_dates]))
+print (max([q for q in log_dates]))
