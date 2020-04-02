@@ -7,49 +7,56 @@ with open(log_file_name, 'r', encoding='utf-8') as text_file:
     max_date_str = ''
     # Читаем строку и сравниваем
     for line in text_file:
-        if line[:22] > max_date_str[:22]:
+        if line[:23] > max_date_str[:23]:
             max_date_str = line
 # Выводим дату и время последнего лога
-print ("Вариант 1")
-print (max_date_str)
+print("Вариант 1")
+print(max_date_str)
 
 # Вариант 2
 # открываем и читаем файл
 log_file_name = 'log'
-#  импортируем re
+#  импортируем модуль re
 import re
+
 # Создаем словарь с ключами к листам
-dict_data={'Date_and_Time' : [], 'Application' : [], 'Type' : [], 'Message' : []}
+dict_data = {'Date_and_Time': [], 'Application': [], 'Type': [], 'Message': []}
 with open(log_file_name, 'r', encoding='utf-8') as text_file:
     for line in text_file:
-        # Делаем сплит строк регулярным выражением
-        log_split = re.split(r'(\d+-\d+-\d+.\d+:\d+:\d+,\d+).-.(\w+).-.(\w+).-.(.*)', line)
-        i=1
+        # Делаем сплит строки регулярным выражением
+        log_split = re.split(r'\s[-]\s|\n', line)
+        i = 0
         # Заполняем словарь по ключам данными
         for key in dict_data.keys():
             dict_data[key].append(log_split[i])
-            i +=1
+            i += 1
     # Получаем лист с датами по ключу
     date_time_line = (dict_data['Date_and_Time'])
-    # Сортируем лист
-    date_time_line.sort(reverse=True)
-    # Выводим дату и время последнего лога
+    # Выводим дату и время последнего лога c помощью функции max
     print("Вариант 2")
-    print(date_time_line[0])
+    print(max([q for q in date_time_line]))
     print()
 
 # Вариант 3
+#  импортируем модуль pandas
 import pandas as pd
-log_file = pd.read_csv(log_file_name, sep=' - ', names=['Date_and_Time', 'Application', 'Type', 'Message'], engine = 'python')
-print ("Вариант 3")
-print(log_file.sort_values('Date_and_Time',  ascending=False).head(1))
+
+# заполняем переменную сериями обработанными функциями модуля
+log_file = pd.read_csv(log_file_name, sep=' - ', names=['Date_and_Time', 'Application', 'Type', 'Message'],
+                       engine='python')
+print("Вариант 3")
+print(log_file.sort_values('Date_and_Time', ascending=False).head(1))
 print()
 
 # Вариант 4
-import datetime
+#  импортируем модуль datetime as dt
+import datetime as dt
+
 log_dates = []
 file = open(log_file_name, 'rb').readlines()
 for line in file:
-    log_dates.append(datetime.datetime.strptime(line.decode().split(' - ')[0], '%Y-%m-%d %H:%M:%S,%f'))
-print ("Вариант 4")
-print (max([q for q in log_dates]))
+    # заполняем лист датами обработанными функциями модуля
+    log_dates.append(dt.datetime.strptime(line.decode().split(' - ')[0], '%Y-%m-%d %H:%M:%S,%f'))
+# Выводим дату и время последнего лога c помощью функции max
+print("Вариант 4")
+print(max([q for q in log_dates]))
