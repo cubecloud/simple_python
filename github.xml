@@ -1,0 +1,7 @@
+<application>
+  <component name="GithubAccounts">
+    <account id="8e376117-3ff0-44f4-8604-d886e42d1e9c" name="cubecloud">
+      <server host="github.com" />
+    </account>
+  </component>
+</application>
