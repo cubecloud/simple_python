@@ -1,6 +1,0 @@
-<keymap version="1" name="Windows copy" parent="$default">
-  <action id="CommentByBlockComment">
-    <keyboard-shortcut first-keystroke="shift ctrl slash" />
-    <keyboard-shortcut first-keystroke="shift ctrl slash" second-keystroke="ctrl period" />
-  </action>
-</keymap>
