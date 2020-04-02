@@ -3,10 +3,7 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
-      <excludeFolder url="file://$MODULE_DIR$/python_lesson_1/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/python_lesson_1/venv" />
-      <excludeFolder url="file://$MODULE_DIR$/python_lesson_2/.idea" />
-      <excludeFolder url="file://$MODULE_DIR$/python_lesson_3/.idea" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
