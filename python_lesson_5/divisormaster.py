@@ -109,9 +109,11 @@ def div_guru(number, dividers=_SNUMBERS):
 def all_dividers (num):
     all_dividers_numbers = []
     for i in range(1, num+1):
-        if num % i == 0:
-            all_dividers_numbers.append(i)
+        if num % i == 0: all_dividers_numbers.append(i)
     return all_dividers_numbers
+
+def max_divider (dividers_list):
+    return max(dividers_list)
 
 # Main Body
 list_length = 1000
