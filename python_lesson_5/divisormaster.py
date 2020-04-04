@@ -47,6 +47,7 @@ def check_number_simplicity(number):
 
 # создает лист с простыми числами до указанного предела
 def create_simple_number_list(quantity):
+    _SNUMBERS = [1, 2]
     for n in range(3, quantity):
         if check_number_simplicity(n): _SNUMBERS.append(n)
     return _SNUMBERS
