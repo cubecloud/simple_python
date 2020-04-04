@@ -1,0 +1,13 @@
+<keymap version="1" name="Windows copy" parent="$default">
+  <action id="CollapseSelection">
+    <keyboard-shortcut first-keystroke="ctrl #100044e" />
+  </action>
+  <action id="CommentByLineComment">
+    <keyboard-shortcut first-keystroke="ctrl slash" />
+    <keyboard-shortcut first-keystroke="ctrl period" />
+  </action>
+  <action id="EditorChooseLookupItemDot" />
+  <action id="Images.Editor.ActualSize">
+    <keyboard-shortcut first-keystroke="ctrl divide" />
+  </action>
+</keymap>
