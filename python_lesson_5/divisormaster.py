@@ -105,7 +105,7 @@ def div_guru(number, dividers=_SNUMBERS):
     if div_number(number) == 0:
         return div_list
 
-# Создается список со всеми возможными делителями
+# Создается список со всеми возможными делителями заданного числа
 def all_dividers (num):
     all_dividers_numbers = []
     for i in range(1, num+1):
