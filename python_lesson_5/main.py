@@ -19,5 +19,3 @@ print(div_guru(num))
 print(div_guru_canon(num))
 print('Самый большой делитель (не обязательно простой) числа',num)
 print (max_divider(all_dividers(num)[:-1]))
-
-
