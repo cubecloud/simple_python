@@ -62,8 +62,7 @@ def rare_char(names_list):
     # создаем словарь из букв с подсчетом кол-ва каждой буквы в списке
     dict_char = keys_counter(char_list)
     # Выводим пару - самую редкую букву в списке и кол-во ее в списке
-    couple = top_n(dict_char, (len(dict_char) - 1), (len(dict_char)))
-    return couple
+    return top_n(dict_char, (len(dict_char) - 1), (len(dict_char)))
 
 # Основное тело
 # List имен
