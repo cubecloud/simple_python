@@ -56,4 +56,3 @@ def test3c_dirty_function():
 def test3d_dirty_function():
     names_ = ["Даша","Сергей"]
     assert (ls4.names_list_gen(names_, 2)) == ["Даша", "Даша"]
-
