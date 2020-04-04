@@ -47,6 +47,7 @@ def check_number_simplicity(number):
 
 # создает лист с простыми числами до указанного предела
 def create_simple_number_list(quantity):
+    if _SNUMBERS != [1, 2] : return _SNUMBERS
     for n in range(3, quantity):
         if check_number_simplicity(n): _SNUMBERS.append(n)
     return _SNUMBERS
@@ -118,7 +119,7 @@ def max_divider (dividers_list):
 # Main Body
 list_length = 1000
 print('Инициализация модуля. Создание списка простых чисел до', list_length)
-_SNUMBERS = create_simple_number_list(list_length)
+create_simple_number_list(list_length)
 
 if __name__ == '__main__':
     print('Это сам модуль\n')
