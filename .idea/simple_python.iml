@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/python_lesson_2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/python_lesson_3" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/python_lesson_4" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/python_lesson_5" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/python_lesson_1/venv" />
     </content>

@@ -7,8 +7,7 @@ with open(log_file_name, 'r', encoding='utf-8') as text_file:
     max_date_str = ''
     # Читаем строку и сравниваем
     for line in text_file:
-        if line[:23] > max_date_str[:23]:
-            max_date_str = line
+        if line[:23] > max_date_str[:23]: max_date_str = line
 # Выводим дату и время последнего лога
 print("Вариант 1")
 print(max_date_str)
@@ -34,7 +33,8 @@ with open(log_file_name, 'r', encoding='utf-8') as text_file:
     date_time_line = (dict_data['Date_and_Time'])
     # Выводим дату и время последнего лога c помощью функции max
     print("Вариант 2")
-    print(max([q for q in date_time_line]))
+    print (max(date_time_line))
+
     print()
 
 # Вариант 3

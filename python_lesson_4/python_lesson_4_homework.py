@@ -1,4 +1,5 @@
 import random
+
 # Задача 1
 # Напишите функцию (F): на вход список имен и целое число N;
 # на выходе список длины N случайных имен из первого списка
@@ -24,7 +25,8 @@ def keys_list(all_list):
 # заполняем словарь листом с уникальными элементами
 # и считаем тут же число вхождений слова по полному списку
 # возвращаем полный словарь со считанными словами
-def keys_counter(all_words):
+# Сортируем по умолчанию по 0 позиции
+def keys_counter(all_words, position=0, right_to_left=False):
     dict_temp = {}
     # заполняем словарь уникальными элементами (ключами)
     # и иницианилизируем ячейку числом
@@ -32,14 +34,16 @@ def keys_counter(all_words):
     # берем очередное слово в общем тексте (листе)
     # и заносим сразу в словарь +1 по ключу
     for elem in all_words: dict_temp[elem] += 1
+    dict_temp = dict(sorted(dict_temp.items(), key=lambda x: x[position], reverse=right_to_left))
     return dict_temp
 
 # Возвращаем срез отсортированного словаря по кол-ву
-def top_n(dict, a, n):
+def top_n(dict, a=0, n=1, rev=True):
     # Сортируем словарь по кол-ву вхождений
-    dict = sorted(dict.items(), key=lambda x: x[1], reverse=True)
+    dict = sorted(dict.items(), key=lambda x: x[1], reverse=rev)
     # Возвращаем топ N позиций из словаря
     return dict[a:n]
+
 
 # Задача 2
 # Напишите функцию вывода самого частого имени из списка на выходе функции F;
@@ -59,10 +63,9 @@ def rare_char(names_list):
         # создаем лист из первых букв имен
         char_list.append(names_list[i][:1])
     # создаем словарь из букв с подсчетом кол-ва каждой буквы в списке
-    dict_char = keys_counter(char_list)
+    dict_char = keys_counter(char_list,1,False)
     # Выводим пару - самую редкую букву в списке и кол-во ее в списке
-    couple = top_n(dict_char, (len(dict_char) - 1), (len(dict_char)))
-    return couple
+    return  top_n(dict_char,0,1, False)
 
 # Основное тело
 # List имен
