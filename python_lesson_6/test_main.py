@@ -26,9 +26,13 @@ def test4_function():
     assert (max_divider(div_guru(num))) == 3
 
 def test5a_function():
+    # первый вызов внутри функции или блока выдает простые числа до 1000. Как при инициализации
     assert (create_simple_number_list(12)) == [1, 2, 3, 5, 7, 11]
     assert (create_simple_number_list(9)) == [1, 2, 3, 5, 7, 11]
+
 def test5b_function():
+    # первый вызов внутри функции или блока выдает простые числа до 1000. Как при инициализации
+    assert (create_simple_number_list(9)) == [1, 2, 3, 5, 7, 11]
     assert (create_simple_number_list(12)) == _SNUMBERS
     assert (_SNUMBERS) == [1, 2, 3, 5, 7, 11]
     assert (create_simple_number_list(9)) == [1, 2, 3, 5, 7, 11]
