@@ -21,7 +21,7 @@ def get_line_2dict (line_str):
     return line_dict
 
 
-#Делаем переменные из ключей словаря
+#Делаем переменные из ключей словаря, обьявляем их глобальными
 def get_dict_data(line_dict):
     for key, value in line_dict.items():
         globals()[key] = value
@@ -54,6 +54,7 @@ def save_dict_2csv (line_dict):
         writer.writerow(line_dict)
     return True
 
+
 # Записываем JSON файл
 def save_dict_2json (line_dict):
     global outjsonfile_name
@@ -63,6 +64,7 @@ def save_dict_2json (line_dict):
     return True
 
 
+# Добавляем в docx документ время затраченное на генерацию отчета
 def add_docx_report_time (time_elapsed):
     doc = docx.Document(outdocxfile_name)
     text = []
@@ -76,40 +78,47 @@ def add_docx_report_time (time_elapsed):
     doc.save(outdocxfile_name)
     return
 
-
+# Добавляем в csv документ время затраченное на генерацию отчета
 def add_csv_report_time (time_elapsed):
-    # outcsvfile_name =(Brand + '_' + str(datetime.datetime.now().date()) + '_report.csv')
+    # Читаем файл
     with open(outcsvfile_name, 'r') as csvfile:
         line_dict=dict()
         reader = csv.DictReader(csvfile)
         for row in reader:
             line_dict=row
-            line_dict.update({'GenTime':str(time_elapsed)})
+        line_dict.update({'GenTime':str(time_elapsed)})
+        # Записываем в файл обновленные данные
         save_dict_2csv (line_dict)
-    return True
+    return
 
+# Добавляем в json документ время затраченное на генерацию отчета
 def add_json_report_time (time_elapsed):
-    # outjsonfile_name =(Brand + '_' + str(datetime.datetime.now().date()) + '_report.json')
+    # Читаем файл
     with open(outjsonfile_name, 'r') as jsonfile:
         file_content = jsonfile.read()
         line_dict = json.loads(file_content)
         line_dict.update({'GenTime':str(time_elapsed)})
+        # Записываем в файл обновленные данные
         save_dict_2json (line_dict)
     return True
 
 
 # Основное тело
-text_dict=dict()
-
 line_dict=dict()
-
 with open(datafile_name, 'r', encoding='utf-8') as textfile:
     for line in textfile:
-        line_dict=get_line_2dict(line)
+        line_dict= get_line_2dict(line)
+        # Создаем глобальные переменные из созданного словаря
         get_dict_data(line_dict)
+        # Генерируем отчет и замеряем время
         time_elapsed = timeit.timeit("generate_report(**line_dict)", setup="from __main__ import generate_report", number=1, globals=globals())
+        # Добавляем время в файл
         add_docx_report_time(time_elapsed)
+        # Генерируем отчет и замеряем время
         time_elapsed = timeit.timeit("save_dict_2csv(line_dict)", setup="from __main__ import save_dict_2csv", number=1, globals=globals())
+        # Добавляем время в файл
         add_csv_report_time(time_elapsed)
+        # Генерируем отчет и замеряем время
         time_elapsed = (timeit.timeit("save_dict_2json(line_dict)", setup="from __main__ import save_dict_2json", number=1, globals=globals()))
+        # Добавляем время в файл
         add_json_report_time (time_elapsed)
