@@ -47,9 +47,9 @@ def check_number_simplicity(number):
 
 # создает лист с простыми числами до указанного предела
 def create_simple_number_list(quantity):
-    # еели запускается не первый, раз то проверяем есть ли список
+    # еели запускается не первый раз, то проверяем есть ли список
     # если список уже создан - просто возвращаемся
-    if _SNUMBERS != [1, 2] : return _SNUMBERS
+    if _SNUMBERS != [1, 2]: return _SNUMBERS
     for n in range(3, quantity):
         if check_number_simplicity(n): _SNUMBERS.append(n)
     return _SNUMBERS
