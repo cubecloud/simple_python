@@ -101,7 +101,7 @@ def add_json_report_time (time_elapsed):
         line_dict.update({'GenTime':str(time_elapsed)})
         # Записываем в файл обновленные данные
         save_dict_2json (line_dict)
-    return True
+    return
 
 
 # Основное тело
