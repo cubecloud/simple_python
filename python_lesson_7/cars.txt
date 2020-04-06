@@ -1,0 +1,3 @@
+Brand: KIA; Model: Sorento Prime; Consumption: 12.5; Price: 1814900; Image: sorentoprime.png
+Brand: BMW; Model: X5; Consumption: 14; Price: 4800000; Image: bmwx5.jpg
+Brand: Skoda; Model: Kodiaq; Consumption: 13.5; Price: 1539000; Image: skodakodiaq.png
