@@ -8,6 +8,7 @@ from docx.shared import Cm
 from docxtpl import DocxTemplate, InlineImage
 
 # Файл с _данными_ состоит из нескольких строк
+# с данными по разным машинам. Одна строка - данные по одной машине
 datafile_name = "cars.txt"
 
 # Cоздаем словарь из 1(одной) строки передаваемого файла
