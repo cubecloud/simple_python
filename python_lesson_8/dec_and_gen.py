@@ -1,7 +1,7 @@
 # функция default_timer из модуля timeit более точная
 from timeit import default_timer
-import os
-import psutil
+import tracemalloc
+
 
 
 # Считам время. Декоратор
@@ -12,37 +12,32 @@ def wtime(f):
         stop_time = default_timer()
         global delta_time
         delta_time = stop_time - start_time
-        print(format(delta_time) + ' сек\n')
+        print(format(delta_time) + ' сек')
         return result
 
     return wrapper
-
 
 # Считаем память. Декоратор
 def wmem(f):
     def wrapper(*args, **kwargs):
-        proc = psutil.Process(os.getpid())
-        start_mem = proc.memory_info().rss
+        tracemalloc.start()
         result = f(*args, **kwargs)
-        proc = psutil.Process(os.getpid())
-        stop_mem = proc.memory_info().rss
+        memory_tuple = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
         global delta_mem
-        delta_mem = ((stop_mem - start_mem) / 1024)
-        print(format(delta_mem) + ' kbytes')
+        delta_mem = memory_tuple[0]
+        print(format(delta_mem) + ' bytes\n')
         return result
 
     return wrapper
-
-
-@wtime
 @wmem
+@wtime
 def nat_gen(num):
     for i in range(num):
         yield (i)
 
-
-@wtime
 @wmem
+@wtime
 def nat_list(num):
     n_list = list()
     for i in range(num):
@@ -68,8 +63,8 @@ else:
 if delta_mem1 < delta_mem:
     print('Генератор натуральных чисел занимает в памяти меньше, '
           'чем функция создания списка натуральных чисел и ее данные (от 1 до 1 млн) на')
-    print(str(delta_mem - delta_mem1) + ' Kbytes')
+    print(str(delta_mem - delta_mem1) + ' bytes')
 else:
     print('Генератор натуральных чисел занимает в памяти больше, '
           'чем функция создания списка натуральных чисел и ее данные (от 1 до 1 млн) на')
-    print(str(delta_mem1 - delta_mem) + ' Kbytes')
+    print(str(delta_mem1 - delta_mem) + ' bytes')
