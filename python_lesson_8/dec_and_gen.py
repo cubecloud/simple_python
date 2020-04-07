@@ -1,8 +1,10 @@
+# функция default_timer из модуля timeit более точная
 from timeit import default_timer
 import os
 import psutil
 
 
+# Считам время. Декоратор
 def wtime(f):
     def wrapper(*args, **kwargs):
         start_time = default_timer()
@@ -11,9 +13,11 @@ def wtime(f):
         delta_time = stop_time - start_time
         print(format(delta_time) + ' сек\n')
         return result
+
     return wrapper
 
 
+# Считаем память. Декоратор
 def wmem(f):
     def wrapper(*args, **kwargs):
         proc = psutil.Process(os.getpid())
@@ -21,16 +25,19 @@ def wmem(f):
         result = f(*args, **kwargs)
         proc = psutil.Process(os.getpid())
         stop_mem = proc.memory_info().rss
-        delta_mem = ((stop_mem - start_mem)/1024)
+        delta_mem = ((stop_mem - start_mem) / 1024)
         print(format(delta_mem) + ' kbytes')
         return result
+
     return wrapper
+
 
 @wtime
 @wmem
 def nat_gen(num):
     for i in range(num):
-        yield(i)
+        yield (i)
+
 
 @wtime
 @wmem
