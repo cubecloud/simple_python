@@ -1,8 +1,5 @@
-# import time
 from timeit import default_timer
-# import sys
 import os
-# import random
 import psutil
 
 
