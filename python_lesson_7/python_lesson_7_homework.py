@@ -32,7 +32,8 @@ def get_dict_data(l_dict):
 
 # Передаем переменные словаря в качестве аргумента.
 # Ключи из файла, также являются именами переменных
-# и ключами для вставки в template
+# и ключами для вставки в template.
+# Первый ключ, он же первая часть имени для репорта
 def generate_report(**l_dict):
     template = 'template_for_python.docx'
     template = DocxTemplate(template)
@@ -41,7 +42,7 @@ def generate_report(**l_dict):
     l_dict['pic'] = pic  # adds the InlineImage object to the context
     template.render(l_dict)
     global outdocxfile_name
-    outdocxfile_name = (Brand + '_' + str(datetime.datetime.now().date()) + '_report.docx')
+    outdocxfile_name = (((list(l_dict.values()))[0]) + '_' + str(datetime.datetime.now().date()) + '_report.docx')
     template.save(outdocxfile_name)
     return True
 
@@ -49,7 +50,7 @@ def generate_report(**l_dict):
 # Записываем CSV файл
 def save_dict_2csv(l_dict):
     global outcsvfile_name
-    outcsvfile_name = (Brand + '_' + str(datetime.datetime.now().date()) + '_report.csv')
+    outcsvfile_name = (((list(l_dict.values()))[0]) + '_' + str(datetime.datetime.now().date()) + '_report.csv')
     with open(outcsvfile_name, 'w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=l_dict.keys())
         writer.writeheader()
@@ -60,7 +61,7 @@ def save_dict_2csv(l_dict):
 # Записываем JSON файл
 def save_dict_2json(l_dict):
     global outjsonfile_name
-    outjsonfile_name = (Brand + '_' + str(datetime.datetime.now().date()) + '_report.json')
+    outjsonfile_name = (((list(l_dict.values()))[0]) + '_' + str(datetime.datetime.now().date()) + '_report.json')
     with open(outjsonfile_name, 'w') as jsonfile:
         json.dump(l_dict, jsonfile)
     return True
@@ -112,6 +113,7 @@ line_dict = dict()
 with open(datafile_name, 'r', encoding='utf-8') as textfile:
     for line in textfile:
         line_dict = get_line_2dict(line)
+
         # Создаем глобальные переменные из созданного словаря
         get_dict_data(line_dict)
         # Генерируем отчет и замеряем время
