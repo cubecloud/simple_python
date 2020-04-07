@@ -15,17 +15,17 @@ datafile_name = "cars.txt"
 # Cоздаем словарь из 1(одной) строки передаваемого файла
 def get_line_2dict(line_str):
     # # Делаем сплит строки регулярным выражением
-    line_dict = dict()
-    line_split = re.split(r'\;\s', line_str.strip('\n'))
+    l_dict = dict()
+    line_split = re.split(r';\s', line_str.strip('\n'))
     for couple in line_split:
-        couple_split = re.split(r'\:\s', couple)
-        line_dict.update({couple_split[0]: couple_split[1]})
-    return line_dict
+        couple_split = re.split(r':\s', couple)
+        l_dict.update({couple_split[0]: couple_split[1]})
+    return l_dict
 
 
 # Делаем переменные из ключей словаря, обьявляем их глобальными
-def get_dict_data(line_dict):
-    for key, value in line_dict.items():
+def get_dict_data(l_dict):
+    for key, value in l_dict.items():
         globals()[key] = value
     return
 
@@ -33,13 +33,13 @@ def get_dict_data(line_dict):
 # Передаем переменные словаря в качестве аргумента.
 # Ключи из файла, также являются именами переменных
 # и ключами для вставки в template
-def generate_report(**line_dict):
+def generate_report(**l_dict):
     template = 'template_for_python.docx'
     template = DocxTemplate(template)
     img_size = Cm(17)  # sets the size of the image
     pic = InlineImage(template, Image, img_size)
-    line_dict['pic'] = pic  # adds the InlineImage object to the context
-    template.render(line_dict)
+    l_dict['pic'] = pic  # adds the InlineImage object to the context
+    template.render(l_dict)
     global outdocxfile_name
     outdocxfile_name = (Brand + '_' + str(datetime.datetime.now().date()) + '_report.docx')
     template.save(outdocxfile_name)
@@ -47,32 +47,32 @@ def generate_report(**line_dict):
 
 
 # Записываем CSV файл
-def save_dict_2csv(line_dict):
+def save_dict_2csv(l_dict):
     global outcsvfile_name
     outcsvfile_name = (Brand + '_' + str(datetime.datetime.now().date()) + '_report.csv')
     with open(outcsvfile_name, 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=line_dict.keys())
+        writer = csv.DictWriter(csvfile, fieldnames=l_dict.keys())
         writer.writeheader()
-        writer.writerow(line_dict)
+        writer.writerow(l_dict)
     return True
 
 
 # Записываем JSON файл
-def save_dict_2json(line_dict):
+def save_dict_2json(l_dict):
     global outjsonfile_name
     outjsonfile_name = (Brand + '_' + str(datetime.datetime.now().date()) + '_report.json')
     with open(outjsonfile_name, 'w') as jsonfile:
-        json.dump(line_dict, jsonfile)
+        json.dump(l_dict, jsonfile)
     return True
 
 
 # Добавляем в docx документ время затраченное на генерацию отчета
-def add_docx_report_time(time_elapsed):
+def add_docx_report_time(t_elapsed):
     doc = docx.Document(outdocxfile_name)
     text = []
     for paragraph in doc.paragraphs:
         text.append(paragraph.text)
-    time_str = ('Отчет сгенерирован за ' + str(time_elapsed) + ' сек')
+    time_str = ('Отчет сгенерирован за ' + str(t_elapsed) + ' сек')
     doc.add_paragraph()
     doc.add_paragraph()
     doc.add_paragraph()
@@ -82,28 +82,28 @@ def add_docx_report_time(time_elapsed):
 
 
 # Добавляем в csv документ время затраченное на генерацию отчета
-def add_csv_report_time(time_elapsed):
+def add_csv_report_time(t_elapsed):
     # Читаем файл
     with open(outcsvfile_name, 'r') as csvfile:
-        line_dict = dict()
+        l_dict = dict()
         reader = csv.DictReader(csvfile)
         for row in reader:
-            line_dict = row
-        line_dict.update({'GenTime': str(time_elapsed)})
+            l_dict = row
+        l_dict.update({'GenTime': str(t_elapsed)})
         # Записываем в файл обновленные данные
-        save_dict_2csv(line_dict)
+        save_dict_2csv(l_dict)
     return
 
 
 # Добавляем в json документ время затраченное на генерацию отчета
-def add_json_report_time(time_elapsed):
+def add_json_report_time(t_elapsed):
     # Читаем файл
     with open(outjsonfile_name, 'r') as jsonfile:
         file_content = jsonfile.read()
-        line_dict = json.loads(file_content)
-        line_dict.update({'GenTime': str(time_elapsed)})
+        l_dict = json.loads(file_content)
+        l_dict.update({'GenTime': str(t_elapsed)})
         # Записываем в файл обновленные данные
-        save_dict_2json(line_dict)
+        save_dict_2json(l_dict)
     return
 
 
