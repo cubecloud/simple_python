@@ -74,7 +74,7 @@ class Fool:
             print(str(cards_on_hand)+'. '+self.show_card(card))
             cards_on_hand+=1
     def show_trump(self):
-
+        pass
 
     def show_card(self, index):
         suit = self.what_suit(index)
@@ -87,6 +87,7 @@ class Fool:
         #     # output = '{}{}'.format(self.playing_deck[index][0][1:],self.suits_icons[self.what_suit(index)][0])
         #     # print(colored(output, 'red', 'on_white'))
         #     return str(self.playing_deck[index][0][1:])+str(self.suits_icons[self.what_suit(index)][0])
+
     def shuffle(self):
         self.playing_deck = self.deck
         # Это лист индексов колоды карт который отражает фактически колоду
@@ -195,5 +196,5 @@ class Fool:
 
 if __name__ == '__main__':
     fool_game = Fool(2)
-    fool_game.show_all_cards()
+    fool_game.show_table()
 
