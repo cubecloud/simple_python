@@ -61,6 +61,7 @@ class Fool:
     def show_all_cards(self):
         # self.show_card(self.current_card_index())
         self.show_player_cards(2)
+        self.show_trump()
 
         # deck_list =list()
         # for key in self.hidden_playing_deck_order:
@@ -68,16 +69,28 @@ class Fool:
         # print (deck_list)
         # print(self.hidden_playing_deck_order)
 
+
+    def check_card_from_hand (self,p_number, index):
+        return self.players_decks[p_number][index]
+
+
     def show_player_cards(self, p_number):
         cards_on_hand=1
         for card in self.players_decks_lists[p_number]:
             print(str(cards_on_hand)+'. '+self.show_card(card))
             cards_on_hand+=1
+
+
     def show_trump(self):
-        pass
+        print()
+        # print (self.trump_index)
+        print('Козырь: ' +self.show_card(self.trump_index))
+        print('В колоде карт: ' + str(36 - self.hidden_deck_index))
+        # print (self.show_card[self.trump_index])
+        # print('Козырь:' + self.show_card(self.playing_deck[self.trump_index][0][0:]))
 
     def show_card(self, index):
-        suit = self.what_suit(index)
+        # suit = self.what_suit(index)
         return str(self.playing_deck[index][0][1:])+str(self.suits_icons[self.what_suit(index)][0])
         # if (suit == 'П') or (suit == 'К'):
         #     # output = '{}{}'.format(self.playing_deck[index][0][1:],self.suits_icons[self.what_suit(index)][0])
@@ -87,6 +100,13 @@ class Fool:
         #     # output = '{}{}'.format(self.playing_deck[index][0][1:],self.suits_icons[self.what_suit(index)][0])
         #     # print(colored(output, 'red', 'on_white'))
         #     return str(self.playing_deck[index][0][1:])+str(self.suits_icons[self.what_suit(index)][0])
+
+    def show_cards_list(self,deck_list):
+        cards_list_str=str()
+        for card in deck_list:
+            cards_list_str += self.show_card(card)+' '
+        return cards_list_str
+
 
     def shuffle(self):
         self.playing_deck = self.deck
@@ -98,6 +118,7 @@ class Fool:
     # передаем индекс карты из списка self.hidden_playing_deck_order,
     # ссылаясь на индекс верхней карты колоды
     def current_card_index(self):
+        # print (self.hidden_playing_deck_order[self.hidden_deck_index])
         return self.hidden_playing_deck_order[self.hidden_deck_index]
 
     # Получаем номер игрока, и статус карты для изменения
@@ -113,12 +134,15 @@ class Fool:
     # добавить карту в руку игрока
     def add_card_2player_hand(self, p_number):
         # Добавим карту в руку
+        # print("раздача карты")
         self.players_decks_lists[p_number].append(self.current_card_index())
         # Добавим карту в базу знаний игрока
         self.change_card_status(p_number, self.current_card_index(), 'Игрок ' + str(p_number))
+        # print(self.players_decks[p_number])
+        # print((self.players_decks[p_number][self.current_card_index()]))
         # Индекс карты в дек листе меняем на следующую карту
         self.hidden_deck_index += 1
-        # print((self.players_decks[p_number][self.hidden_deck_index][1]))
+        # print((self.players_decks[p_number][self.current_card_index()][1]))
 
     def what_suit(self, index):
         return self.playing_deck[index][0][0]
@@ -126,11 +150,14 @@ class Fool:
     def add_trump_card(self):
         for player_number in range(1, self.players_number + 1):
             # Поменять статус на 'Козырь')
-            # Добавим карту в базу знаний игроков
+            # Добавим карту в базу знаний всех игроков
             self.change_card_status(player_number, self.current_card_index(), 'Козырь')
-        # self.what_suit(self.current_card_index())
-        self.game_trump_char = self.playing_deck[self.current_card_index()][0][0]
-        self.game_trump_name = self.suits_names[self.game_trump_char]
+        # Сделать с индексом козыря (в деке по этому номеру лежит последняя козырная карта в колоде)
+        self.trump_index = self.current_card_index()
+        # перенести в скрытом листе, открытого козыря последним в список, перемешанной деки
+        # чтобы он был последним
+        self.hidden_playing_deck_order.remove(self.trump_index)
+        self.hidden_playing_deck_order.append(self.trump_index)
         # Индекс карты в дек листе меняем на следующую карту
         self.hidden_deck_index += 1
 
@@ -169,6 +196,18 @@ class Fool:
             # self.player2_name = self.ask_for_name(2)
             self.player2_name = 'Dummy'
 
+    def first_turn_choice(self):
+        print ("Идет выбор ходящего первым")
+        min_card_index =dict()
+        for player_number in range (1, self.players_number + 1):
+            # print('Игрок',player_number, self.show_cards_list(self.players_decks_lists[player_number]))
+            min_card_index[player_number] = min([card for card in self.players_decks_lists[player_number]])
+        min_card_player = (min(min_card_index.items(), key=lambda x: x[1])[0])
+        print ('Минимальная карта у игрока', min_card_player, 'это карта', self.show_card(min_card_index[min_card_player]))
+        # Почему-то лямбда не работает в этом случае, как положено - ошибается. Оставил показать.
+        # print('Первым ходит игрок', min(self.players_decks_lists.items(), key=lambda x: x[1])[0])
+        return min_card_player
+
     def set_table(self):
         self.shuffle()
         self.table_init()
@@ -180,8 +219,10 @@ class Fool:
                 # добавляем 1 карту каждому игроку
                 self.add_card_2player_hand(player_number)
         self.add_trump_card()
+        self.player_turn = self.first_turn_choice()
 
     def show_table(self):
+        self.turn = 1
         self.show_all_cards()
 
     def show_cards(self, players=2):
