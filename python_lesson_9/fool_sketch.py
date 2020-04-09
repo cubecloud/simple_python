@@ -1,10 +1,6 @@
 from random import choice, shuffle
 from termcolor import colored, cprint
 
-def dprint(d,key_format = "\033[1;32m",value_format = "\033[1;34m"):
-    for key in d.keys() :
-        print (key_format, key, value_format, d[key])
-
 class colortext:
     purple = '\033[95m'
     cyan = '\033[96m'
@@ -16,8 +12,45 @@ class colortext:
     bold = '\033[1m'
     underline = '\033[4m'
     end = '\033[0m'
+    red_on_white = '\033[1;31;40m'
+    white_on_gray = '\033[1;30;47m'
+    gray_on_white = '\033[1;90;40m'
 
-class Fool:
+class Player:
+    def __init__(self, N, player_type):
+        self.player_number = N
+        self.player_types = {1:'Human', 2:'Computer'}
+        self.player_type = self.player_types[player_type]
+        # если человек то запрашиваем имя
+        if self.player_type == self.player_types[1]:
+            self.player_name = self.player_types[player_type]
+                # self.ask_for_name(self.player_number)
+        else:
+            self.player_name ='Computer '+str(self.player_number)
+        self.player_cards_onhand_list = list()
+
+    def change_card_status(self, index, status):
+        self.player_deck[self.player_number][index][1] = status
+
+    def get_card (self, index):
+        self.player_cards_onhand_list = self.player_deck_list.append(index)
+        self.change_card_status(index, 'Игрок '+ str(self.player_number))
+
+    def set_trump (self, index):
+        self.change_card_status(index, 'Козырь')
+
+    def get_deck(self, player_deck):
+        self.player_deck=player_deck
+        # print(self.player_deck)
+    def ask_for_name(self):
+        print('Игрок', self.player_number,'введите имя =>')
+        while True:
+            try:
+                self.player_name = str(input())
+                break
+            except (TypeError, ValueError):
+                print("Неправильный ввод")
+class Dealer:
 
     def __init__(self, N):
         # кол-во игроков
@@ -47,59 +80,10 @@ class Fool:
         # Стол № - Карта от игрока № на столе
         # Козырь - карта открыта в качестве козыря'
 
-        # cprint('\u2660', 'white','on_grey')
-        # cprint('\u2663', 'white','on_grey')
-        # cprint('\u2666', 'red','on_grey')
-        # cprint('\u2665', 'red','on_grey')
-
         self.suits_names = {"П": "Пики", "К": "Крести", "Б": "Бубны", "Ч": "Черви"}
         self.suits_icons = {"П": '\u2660', "К": '\u2663', "Б": '\u2666', "Ч": '\u2665'}
-        self.set_table()
 
 
-
-    def show_all_cards(self):
-        # self.show_card(self.current_card_index())
-        self.show_player_cards(2)
-        self.show_trump()
-
-        # deck_list =list()
-        # for key in self.hidden_playing_deck_order:
-        #      deck_list.append((self.playing_deck[key]))
-        # print (deck_list)
-        # print(self.hidden_playing_deck_order)
-
-
-    def check_card_from_hand (self,p_number, index):
-        return self.players_decks[p_number][index]
-
-
-    def show_player_cards(self, p_number):
-        cards_on_hand=1
-        for card in self.players_decks_lists[p_number]:
-            print(str(cards_on_hand)+'. '+self.show_card(card))
-            cards_on_hand+=1
-
-
-    def show_trump(self):
-        print()
-        # print (self.trump_index)
-        print('Козырь: ' +self.show_card(self.trump_index))
-        print('В колоде карт: ' + str(36 - self.hidden_deck_index))
-        # print (self.show_card[self.trump_index])
-        # print('Козырь:' + self.show_card(self.playing_deck[self.trump_index][0][0:]))
-
-    def show_card(self, index):
-        # suit = self.what_suit(index)
-        return str(self.playing_deck[index][0][1:])+str(self.suits_icons[self.what_suit(index)][0])
-        # if (suit == 'П') or (suit == 'К'):
-        #     # output = '{}{}'.format(self.playing_deck[index][0][1:],self.suits_icons[self.what_suit(index)][0])
-        #     # print(colored(output, 'grey', 'on_white'))
-        #     return str(self.playing_deck[index][0][1:])+str(self.suits_icons[self.what_suit(index)][0])
-        # else:
-        #     # output = '{}{}'.format(self.playing_deck[index][0][1:],self.suits_icons[self.what_suit(index)][0])
-        #     # print(colored(output, 'red', 'on_white'))
-        #     return str(self.playing_deck[index][0][1:])+str(self.suits_icons[self.what_suit(index)][0])
 
     def show_cards_list(self,deck_list):
         cards_list_str=str()
@@ -107,13 +91,6 @@ class Fool:
             cards_list_str += self.show_card(card)+' '
         return cards_list_str
 
-
-    def shuffle(self):
-        self.playing_deck = self.deck
-        # Это лист индексов колоды карт который отражает фактически колоду
-        self.hidden_playing_deck_order = list(self.playing_deck.keys())
-        # А теперь перемешанную колоду
-        shuffle(self.hidden_playing_deck_order)
 
     # передаем индекс карты из списка self.hidden_playing_deck_order,
     # ссылаясь на индекс верхней карты колоды
@@ -161,20 +138,6 @@ class Fool:
         # Индекс карты в дек листе меняем на следующую карту
         self.hidden_deck_index += 1
 
-    def table_init(self):
-        # Инициализируем словарь (массив) с деками игроков
-        self.players_decks = dict()
-        # Инициализируем словарь для листов с картами игроков, которые они знают (где находятся).
-        self.players_decks_lists = dict()
-        for player_number in range(1, self.players_number + 1):
-            # заносим в словари деки игроков
-            self.players_decks.update({player_number: self.playing_deck})
-            # готовим словарь для внесения карт
-            self.players_decks_lists.update({player_number: []})
-        # устанавливаем индекс карты из колоды на 1
-        # это индекс для ###### self.hidden_playing_deck_order ######
-        self.hidden_deck_index = 1
-
     # Ввод имени
     def ask_for_name(self,p_number):
         print('Игрок', p_number,'введите имя =>')
@@ -186,32 +149,101 @@ class Fool:
                 print("Неправильный ввод")
         return player_name
 
-
-    def set_players(self):
-        if self.players_number != 2:
-            print ("НЕ ГОТОВО для более чем 2-х игроков")
-            exit(1)
-        else:
-            self.player1_name = 'Computer'
-            # self.player2_name = self.ask_for_name(2)
-            self.player2_name = 'Dummy'
-
     def first_turn_choice(self):
         print ("Идет выбор ходящего первым")
         min_card_index =dict()
         for player_number in range (1, self.players_number + 1):
-            # print('Игрок',player_number, self.show_cards_list(self.players_decks_lists[player_number]))
+            print('Игрок',player_number, self.show_cards_list(self.players_decks_lists[player_number]))
             min_card_index[player_number] = min([card for card in self.players_decks_lists[player_number]])
         min_card_player = (min(min_card_index.items(), key=lambda x: x[1])[0])
         print ('Минимальная карта у игрока', min_card_player, 'это карта', self.show_card(min_card_index[min_card_player]))
-        # Почему-то лямбда не работает в этом случае, как положено - ошибается. Оставил показать.
-        # print('Первым ходит игрок', min(self.players_decks_lists.items(), key=lambda x: x[1])[0])
+        # Почему-то лямбда не работает в этом случае, как положено - иногда ошибается. Оставил показать.
+        # print(self.players_decks_lists)
+        # key_min=min(self.players_decks_lists.keys(), key=(lambda k: self.players_decks_lists[k]))
+        # print('Первым ходит игрок', key_min)
         return min_card_player
 
+    def show_card(self, index):
+        suit = self.what_suit(index)
+        # Пока не удалось решить проблему с выводом цветного текста сразу из переменной словаря
+        # Делаем проверку и присваиваем цвет через print(f'{переменная}'
+        if (suit == 'П') or (suit == 'К'):
+            color = colortext.gray_on_white
+        else:
+            color = colortext.red_on_white
+        output = f'{color}' + str(self.playing_deck[index][0][1:]) + f'{color}' + str(
+            self.suits_icons[self.what_suit(index)][0:]) + f'{colortext.end}'
+        return output
+
+
+    def show_trump(self):
+        print()
+        # print (self.trump_index)
+        print('Козырь: ' +self.show_card(self.trump_index))
+        print('В колоде карт: ' + str(36 - self.hidden_deck_index))
+        # print (self.show_card[self.trump_index])
+        # print('Козырь:' + self.show_card(self.playing_deck[self.trump_index][0][0:]))
+
+
+    def show_player_cards(self, p_number):
+        cards_on_hand=1
+        for card in self.players_decks_lists[p_number]:
+            print(f'{cards_on_hand}. '+self.show_card(card))
+            cards_on_hand+=1
+
+
+    def show_all_cards(self):
+        self.show_player_cards(2)
+        self.show_trump()
+
+    def show_table(self):
+        self.game_turn = 1
+        self.show_all_cards()
+
+
+    # Устанавливаем кол-во игроков и их типы
+    def set_players(self):
+        self.pl =dict()
+        if self.players_number != 2:
+            print ("НЕ ГОТОВО для более чем 2-х игроков")
+            exit(1)
+        else:
+            self.pl[1]=Player(1,1)
+            self.pl[2]=Player(2,2)
+
+
+    # Инициализируем словарь (массив) с деками игроков
+    def table_init(self):
+
+        self.players_decks = dict()
+        # Инициализируем словарь для листов с картами игроков, которые они знают (где находятся).
+        self.players_decks_lists = dict()
+
+        for player_number in range(1, self.players_number + 1):
+            # заносим в словари деки игроков
+            self.pl[player_number].get_deck(self.deck)
+
+            self.players_decks.update({player_number: self.playing_deck})
+            # готовим словарь для внесения карт
+            self.players_decks_lists.update({player_number: []})
+
+        # устанавливаем индекс карты из колоды на 1
+        # это индекс для ###### self.hidden_playing_deck_order ######
+        self.hidden_deck_index = 1
+
+
+    # мешаем колоду
+    def shuffle(self):
+        self.playing_deck = self.deck
+        # Это лист индексов колоды карт который отражает фактически колоду
+        self.hidden_playing_deck_order = list(self.playing_deck.keys())
+        # А теперь перемешанную колоду
+        shuffle(self.hidden_playing_deck_order)
+
     def set_table(self):
+        self.set_players()
         self.shuffle()
         self.table_init()
-        self.set_players()
         # print(self.hidden_playing_deck_order)
         # раздача
         for i in range(6):
@@ -221,21 +253,9 @@ class Fool:
         self.add_trump_card()
         self.player_turn = self.first_turn_choice()
 
-    def show_table(self):
-        self.turn = 1
-        self.show_all_cards()
-
-    def show_cards(self, players=2):
-        pass
-
-    def ai_turn(self):
-        pass
-
-    def player_turn(self):
-        pass
-
-
+# Основное тело, перенести потом в инит часть логики
 if __name__ == '__main__':
-    fool_game = Fool(2)
+    fool_game = Dealer(2)
+    fool_game.set_table()
     fool_game.show_table()
 
