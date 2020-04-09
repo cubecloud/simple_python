@@ -1,4 +1,5 @@
 from random import choice, shuffle
+import copy
 from termcolor import colored, cprint
 
 class colortext:
@@ -16,32 +17,89 @@ class colortext:
     white_on_gray = '\033[1;30;47m'
     gray_on_white = '\033[1;90;40m'
 
+
 class Player:
     def __init__(self, N, player_type):
         self.player_number = N
-        self.player_types = {1:'Human', 2:'Computer'}
+        self.player_types = {1: 'Human', 2: 'Computer'}
         self.player_type = self.player_types[player_type]
         # если человек то запрашиваем имя
         if self.player_type == self.player_types[1]:
             self.player_name = self.player_types[player_type]
-                # self.ask_for_name(self.player_number)
+            # self.ask_for_name(self.player_number)
         else:
-            self.player_name ='Computer '+str(self.player_number)
+            self.player_name = 'Computer ' + str(self.player_number)
         self.player_cards_onhand_list = list()
+        self.suit_range={'П':(1,10),'К':(10,19),'Б':(19,28),'Ч':(28,37)}
 
     def change_card_status(self, index, status):
-        self.player_deck[self.player_number][index][1] = status
+        self.player_deck[index][1] = status
+        # print(index)
+        # print(self.player_deck)
 
-    def get_card (self, index):
-        self.player_cards_onhand_list = self.player_deck_list.append(index)
-        self.change_card_status(index, 'Игрок '+ str(self.player_number))
+    def change_card_weight (self, index, new_weight):
+        self.player_deck[index][2] = new_weight
+
+    def get_card_weight(self,index):
+        return self.player_deck[index][2]
+
+    def add_card_weight(self, index, add_weight):
+        return self.change_card_weight(index, self.get_card_weight(index)+add_weight)
+
+    def add_weight_2suit(self, suit_char, add_weight):
+        for index in range (self.suit_range[suit_char][0],self.suit_range[suit_char][1]):
+            self.add_card_weight  (index, add_weight)
+            # print(self.player_deck[index])
+
+    # возвращает из руки карту с наименьшим индексом
+    def lowest_from_hand(self):
+        return min(self.player_cards_onhand_list)
+
+    # возвращает из руки _козырную_ карту с наименьшим индексом
+    def lowest_trump_from_hand(self):
+        try:
+            temp = min(self.trumps_from_hand())
+            return temp
+        except  (ValueError):
+            temp=[]
+            return temp
+
+
+    # возвращает List из козырных карт в руке
+    def trumps_from_hand(self):
+        trumps_onhand=[]
+        for index in self.player_cards_onhand_list:
+            if index in self.trump_range:
+                trumps_onhand.append(index)
+        return trumps_onhand
+
+    def what_suit(self, index):
+        return self.player_deck[index][0][0]
+
+    def get_card(self, index):
+        # print(index)
+        self.player_cards_onhand_list.append(index)
+        self.change_card_status(index, 'Игрок ' + str(self.player_number))
+        # print('Лист',self.player_cards_onhand_list)
+        # print('Дека',self.player_deck)
+
 
     def set_trump (self, index):
+        self.trump_index = index
+        self.trump_char = self.player_deck[index][0][0]
         self.change_card_status(index, 'Козырь')
+        self.add_weight_2suit(self.what_suit(index),100)
+        # print ('index', self.trump_index)
+        # print ('char', self.trump_char)
+        # print ('Range', self.suit_range[self.trump_char][0], self.suit_range[self.trump_char][1])
+        self.trump_range = range(self.suit_range[self.trump_char][0], self.suit_range[self.trump_char][1])
+        # print('Козырь', self.what_suit(index))
 
     def get_deck(self, player_deck):
-        self.player_deck=player_deck
+        self.player_deck= copy.deepcopy(player_deck)
+
         # print(self.player_deck)
+
     def ask_for_name(self):
         print('Игрок', self.player_number,'введите имя =>')
         while True:
@@ -50,6 +108,7 @@ class Player:
                 break
             except (TypeError, ValueError):
                 print("Неправильный ввод")
+
 class Dealer:
 
     def __init__(self, N):
@@ -106,17 +165,12 @@ class Dealer:
         for player_number in range(1, self.players_number + 1):
             # Убрать карту со стола (поменять статус стола и принадлежности на 'Сброс')
             # Добавим карту в свою базу знаний
-            self.change_card_status(player_number, self.current_card_index, 'Сброс')
+            self.pl[player_number].change_card_status(self.current_card_index, 'Сброс')
 
     # добавить карту в руку игрока
     def add_card_2player_hand(self, p_number):
-        # Добавим карту в руку
-        # print("раздача карты")
-        self.players_decks_lists[p_number].append(self.current_card_index())
-        # Добавим карту в базу знаний игрока
-        self.change_card_status(p_number, self.current_card_index(), 'Игрок ' + str(p_number))
-        # print(self.players_decks[p_number])
-        # print((self.players_decks[p_number][self.current_card_index()]))
+        # Добавим карту в руку игрока
+        self.pl[p_number].get_card(self.current_card_index())
         # Индекс карты в дек листе меняем на следующую карту
         self.hidden_deck_index += 1
         # print((self.players_decks[p_number][self.current_card_index()][1]))
@@ -128,8 +182,10 @@ class Dealer:
         for player_number in range(1, self.players_number + 1):
             # Поменять статус на 'Козырь')
             # Добавим карту в базу знаний всех игроков
-            self.change_card_status(player_number, self.current_card_index(), 'Козырь')
-        # Сделать с индексом козыря (в деке по этому номеру лежит последняя козырная карта в колоде)
+            self.pl[player_number].change_card_status (self.current_card_index(), 'Козырь')
+            # Сделать с индексом козыря (в деке по этому номеру лежит последняя козырная карта в колоде)
+            self.pl[player_number].set_trump(self.current_card_index())
+
         self.trump_index = self.current_card_index()
         # перенести в скрытом листе, открытого козыря последним в список, перемешанной деки
         # чтобы он был последним
@@ -153,15 +209,53 @@ class Dealer:
         print ("Идет выбор ходящего первым")
         min_card_index =dict()
         for player_number in range (1, self.players_number + 1):
-            print('Игрок',player_number, self.show_cards_list(self.players_decks_lists[player_number]))
-            min_card_index[player_number] = min([card for card in self.players_decks_lists[player_number]])
-        min_card_player = (min(min_card_index.items(), key=lambda x: x[1])[0])
-        print ('Минимальная карта у игрока', min_card_player, 'это карта', self.show_card(min_card_index[min_card_player]))
-        # Почему-то лямбда не работает в этом случае, как положено - иногда ошибается. Оставил показать.
-        # print(self.players_decks_lists)
-        # key_min=min(self.players_decks_lists.keys(), key=(lambda k: self.players_decks_lists[k]))
-        # print('Первым ходит игрок', key_min)
+            print('Игрок',player_number, self.show_cards_list(self.pl[player_number].trumps_from_hand()))
+            min_card_index[player_number] = self.pl[player_number].lowest_trump_from_hand()
+        # Пробуем операцию мин
+        try:
+            min_card_player =  min(min_card_index.keys(), key=(lambda k: min_card_index[k]))
+            print (f'Минимальная карта у игрока {min_card_player}, это карта', self.show_card(min_card_index[min_card_player]))
+            return min_card_player
+        except (TypeError, ValueError):
+            check_player=0
+            check_card=0
+            for player_number in range (1, self.players_number + 1):
+                print ('мин кард индекс', min_card_index[player_number])
+                if min_card_index[player_number] == []:
+                    continue
+                elif min_card_index[player_number] > check_card:
+                    check_card=min_card_index[player_number]
+                    check_player=player_number
+            if check_card !=None:
+                min_card_player=check_player
+            else:
+                for playerNumber1 in range (1, self.players_number + 1):
+                    print('Игрок',playerNumber1, self.show_cards_list(self.pl[playerNumber1].player_cards_onhand_list))
+                    min_card_index[playerNumber1] = self.pl[playerNumber1].lowest_from_hand()
+                min_card_player = (min(min_card_index.items(), key=lambda x: x[1])[0])
+
+        print(min_card_index)
+        print (f'Минимальная карта у игрока {min_card_player}, это карта', self.show_card(min_card_index[min_card_player]))
         return min_card_player
+
+        # for player_number in range (1, self.players_number + 1):
+        #     if player_number+1>self.players_number:
+        #         break
+        #     if min_card_index[player_number] > min_card_index[player_number+1]:
+        #         min_card_player = player_number
+        #     elif (min_card_index[player_number] == min_card_index[player_number+1]):
+        #         for playerNumber1 in range (1, self.players_number + 1):
+        #             print('Игрок',playerNumber1, self.show_cards_list(self.pl[playerNumber1].player_cards_onhand_list))
+        #             min_card_index[playerNumber1] = self.pl[playerNumber1].lowest_from_hand()
+        #         min_card_player = (min(min_card_index.items(), key=lambda x: x[1])[0])
+        #     else:
+        #         min_card_player=playerNumber1+1
+        #     for player_number in range (1, self.players_number + 1):
+        #         print('Игрок',player_number, self.show_cards_list(self.pl[player_number].player_cards_onhand_list))
+        #         min_card_index[player_number] = self.pl[player_number].lowest_from_hand()
+        # min_card_player = (min(min_card_index.items(), key=lambda x: x[1])[0])
+        # min_card_player =  min(min_card_index.keys(), key=(lambda k: min_card_index[k]))
+
 
     def show_card(self, index):
         suit = self.what_suit(index)
@@ -175,7 +269,6 @@ class Dealer:
             self.suits_icons[self.what_suit(index)][0:]) + f'{colortext.end}'
         return output
 
-
     def show_trump(self):
         print()
         # print (self.trump_index)
@@ -187,7 +280,7 @@ class Dealer:
 
     def show_player_cards(self, p_number):
         cards_on_hand=1
-        for card in self.players_decks_lists[p_number]:
+        for card in self.pl[p_number].player_cards_onhand_list:
             print(f'{cards_on_hand}. '+self.show_card(card))
             cards_on_hand+=1
 
@@ -196,36 +289,29 @@ class Dealer:
         self.show_player_cards(2)
         self.show_trump()
 
+
     def show_table(self):
         self.game_turn = 1
         self.show_all_cards()
 
 
-    # Устанавливаем кол-во игроков и их типы
+    # Устанавливаеv кол-во игроков
     def set_players(self):
         self.pl =dict()
         if self.players_number != 2:
             print ("НЕ ГОТОВО для более чем 2-х игроков")
             exit(1)
         else:
-            self.pl[1]=Player(1,1)
-            self.pl[2]=Player(2,2)
+            # Иницианилизируем работу класса игроков и делаем их словарем
+            self.pl[1]= Player(1,1)
+            self.pl[2]= Player(2,2)
 
 
     # Инициализируем словарь (массив) с деками игроков
     def table_init(self):
-
-        self.players_decks = dict()
-        # Инициализируем словарь для листов с картами игроков, которые они знают (где находятся).
-        self.players_decks_lists = dict()
-
         for player_number in range(1, self.players_number + 1):
             # заносим в словари деки игроков
-            self.pl[player_number].get_deck(self.deck)
-
-            self.players_decks.update({player_number: self.playing_deck})
-            # готовим словарь для внесения карт
-            self.players_decks_lists.update({player_number: []})
+            self.pl[player_number].get_deck(self.playing_deck)
 
         # устанавливаем индекс карты из колоды на 1
         # это индекс для ###### self.hidden_playing_deck_order ######
