@@ -645,8 +645,7 @@ class Table:
                     player_number = self.next_player(player_number)
                     # print ('PN',player_number, 'PT',self.player_turn)
                     # self.show_all_cards()
-                    time.sleep(7)
-                    self.cls()
+                    self.if_human_pause(player_number)
                     continue
                 elif action == 'Attack' and result == 0:
                     # print ('Десктоп', self.desktop_list)
