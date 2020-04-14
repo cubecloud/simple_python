@@ -59,23 +59,23 @@ class Deck:
     def __init__(self):
         pass
 
-    def get_attacking_cards_list (self, round):
-        a_list=list()
-        for index in self.player_deck:
-            if len(self.player_deck[index][1]) > 4:
-                if self.player_deck[index][1][4:] == str(round):
-                    if self.player_deck[index][1][2] == 'A':
-                        a_list.append(index)
-        return a_list
-
-    def get_defending_cards_list (self, round):
-        d_list=list()
-        for index in self.player_deck:
-            if len(self.player_deck[index][1]) > 4:
-                if self.player_deck[index][1][4:] == str(round):
-                    if self.player_deck[index][1][2] == 'D':
-                        d_list.append(index)
-        return d_list
+    # def get_attacking_cards_list (self, round):
+    #     a_list=list()
+    #     for index in self.player_deck:
+    #         if len(self.player_deck[index][1]) > 4:
+    #             if self.player_deck[index][1][4:] == str(round):
+    #                 if self.player_deck[index][1][2] == 'A':
+    #                     a_list.append(index)
+    #     return a_list
+    #
+    # def get_defending_cards_list (self, round):
+    #     d_list=list()
+    #     for index in self.player_deck:
+    #         if len(self.player_deck[index][1]) > 4:
+    #             if self.player_deck[index][1][4:] == str(round):
+    #                 if self.player_deck[index][1][2] == 'D':
+    #                     d_list.append(index)
+    #     return d_list
 
     def change_card_status(self, index, status):
         self.player_deck[index][1] = status
@@ -292,7 +292,7 @@ class Player (Deck):
                         result=0
                         break
                 return self.action, result
-        # возвращаем действие и индекс карты (или пасс/взять)
+        # возвращаем действие и индекс карты (или пас/взять)
         return self.action, result
 
     def low_weight_card (self, c_list):
@@ -574,7 +574,7 @@ class Table:
         # Показываем набор карт человека
         print (f'Раунд № {self.game_round}')
         self.pl[1].show_cards_vert_numbered(self.pl[1].player_cards_onhand_list)
-        print('0. Пасс/забрать')
+        print('0. Пас/забрать')
         self.show_trump()
         self.show_desktop()
 
@@ -609,7 +609,7 @@ class Table:
         if self.pl[player_number].player_type == 'Computer':
             self.cls()
         else:
-            time.sleep (4)
+            time.sleep (3)
             self.cls()
 
     def cls(self):
@@ -625,7 +625,7 @@ class Table:
         # если отбивание произошло, цикл повторяется,
         # 1. пока на столе не будет, 6 пар карт
         # 2. защищающийся скажет 0 (забираю)
-        # 3. атакующий скажет пасс, и пасивный игрок скажет пасс тоже
+        # 3. атакующий скажет пас, и пасивный игрок скажет пас тоже
         circle = True
         player_number=self.player_turn
         while circle:
@@ -714,7 +714,7 @@ class Table:
                     self.add_cardlist_2player_hand(player_number, self.desktop_list)
                     # print ('Десктоп', self.desktop_list)
                     #
-                    # Пассивный игрок не решает о переходе хода,
+                    # Пасивный игрок не решает о переходе хода,
                     # только атакующий. Поскольку мы только подбрасываем
                     # здесь только передача по кругу  следующему игроку
                     #
