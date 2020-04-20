@@ -239,7 +239,6 @@ class Player(Deck):
         return temp
 
 
-
     #  это ход игрока
     def turn(self, action):
         self.action = action
@@ -312,7 +311,7 @@ class Player(Deck):
             else:
                 # (self.action == 'Passive') and (len(self.desktop_list) == 0):
                 result = -1
-                return self.action, result
+                return result
             # возвращаем действие и индекс карты (или пас/взять)
             result = -1
         return result
@@ -575,8 +574,8 @@ class Table:
         print(f'Кол-во игроков: {self.players_number}')
         for i in self.players_numbers_lst:
             if i == 1:
-                # self.pl[1] = Player(1, 1)
-                self.pl[1] = Player(1, 2)
+                self.pl[1] = Player(1, 1)
+                # self.pl[1] = Player(1, 2)
             else:
                 # Тип 2 - Компьютер
                 self.pl[i] = Player(i, 2)
@@ -787,21 +786,21 @@ class Table:
 
 
     def if_human_pause(self, player_number):
-        flag = False
-        if self.end_of_deck:
-            for player_number in self.players_numbers_lst:
-                if len(self.pl[player_number].player_cards_onhand_list) < 2:
-                    flag = True
-        if flag:
+        # flag = False
+        # if self.end_of_deck:
+        #     for player_number in self.players_numbers_lst:
+        #         if len(self.pl[player_number].player_cards_onhand_list) < 2:
+        #             flag = True
+        # if flag:
+        #     time.sleep(2)
+        #     self.cls()
+
+        if self.pl[player_number].player_type == 'Computer':
             time.sleep(2)
             self.cls()
-
-        # if self.pl[player_number].player_type == 'Computer':
-        #     time.sleep(2)
-        #     self.cls()
-        # else:
-        #     time.sleep(2)
-        #     self.cls()
+        else:
+            time.sleep(2)
+            self.cls()
 
 
     def cls(self):
@@ -1024,6 +1023,6 @@ class Table:
 
 # Основное тело, перенести потом в инит часть логики
 if __name__ == '__main__':
-    fool_game = Table(2)
+    fool_game = Table(3)
     fool_game.set_table()
     fool_game.show_table()
