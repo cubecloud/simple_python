@@ -238,17 +238,19 @@ class Player(Deck):
             temp = 0
         return temp
 
+
+
     #  это ход игрока
     def turn(self):
-        # если наш ход атакуем
-        if self.player_number == self.player_turn:
-            self.action = 'Attack'
-        # если ход + 1 равен наш номер - защищаемся, или наш номер 1-й в списке, а ходит последний в списке
-        elif (self.player_number == self.player_turn + 1) or (
-                self.player_turn == self.players_number and self.player_number == 1):
-            self.action = 'Defend'
-        else:
-            self.action = 'Passive'
+        # # если наш ход атакуем
+        # if self.player_number == self.player_turn:
+        #     self.action = 'Attack'
+        # # если ход + 1 равен наш номер - защищаемся, или наш номер 1-й в списке, а ходит последний в списке
+        # elif (self.player_number == self.player_turn + 1) or (
+        #         self.player_turn == self.players_number and self.player_number == 1):
+        #     self.action = 'Defend'
+        # else:
+        #     self.action = 'Passive'
 
         if self.player_type == 'Computer':
             result = self.analyze()
@@ -351,8 +353,8 @@ class Player(Deck):
 
     def defending(self):
         if self.attack_player_pass_flag == False or self.passive_player_pass_flag == False:
-            q = (len(self.desktop_list) + 1) % 2
-            if q == 0:
+            check_parity = (len(self.desktop_list) + 1) % 2
+            if check_parity == 0:
                 # Последняя карта в десктоп листе
                 defending_card = self.desktop_list[(len(self.desktop_list)) - 1]
                 # print ('Defending', defending_card)
@@ -450,7 +452,7 @@ class Table:
         self.action = ''
         self.result = 0
         self.players_numbers_lst =list()
-        for i in range (1,self.players_numbers+1):
+        for i in range (1,self.players_number+1):
             self.players_numbers_lst.append(i)
 
     # передаем индекс карты из списка self.hidden_playing_deck_order,
@@ -462,19 +464,19 @@ class Table:
     # в колоде каждого игрока как находящуюся в сбросе
     def add_2graveyard(self, g_list):
         for index in g_list:
-            for player_number in range(1, self.players_number + 1):
+            for player_number in self.players_numbers_lst:
                 # Убрать карту со стола (поменять статус стола и принадлежности на 'Сброс')
                 # Добавим карту в свою базу знаний
                 self.pl[player_number].add_graveyard_status(index)
 
     def add_card_2desktop(self, index):
         self.desktop_list.append(index)
-        for player_number in range(1, self.players_number + 1):
+        for player_number in self.players_numbers_lst:
             self.pl[player_number].desktop_list = self.desktop_list
 
     def rem_cards_from_desktop(self):
         self.desktop_list.clear()
-        for player_number in range(1, self.players_number + 1):
+        for player_number in self.players_numbers_lst:
             self.pl[player_number].desktop_list = self.desktop_list
 
     def show_desktop(self):
@@ -511,14 +513,14 @@ class Table:
         for index in c_list:
             # взять карту из листа в руку
             self.pl[p_number].get_card(index)
-            for player_number in range(1, self.players_number + 1):
+            for player_number in self.players_numbers_lst:
                 if player_number != p_number:
                     self.pl[player_number].add_player_status(index)
 
     # Установить козыря для всех игроков
     # (фактически показать его всем)
     def add_trump_card(self):
-        for player_number in range(1, self.players_number + 1):
+        for player_number in self.players_numbers_lst:
             # Поменять статус на 'Козырь')
             # Добавим карту в базу знаний всех игроков
             # Сделать с индексом козыря (в деке по этому номеру лежит последняя козырная карта в колоде)
@@ -537,7 +539,7 @@ class Table:
     def first_turn_choice(self):
         # print ("Идет выбор ходящего первым")
         min_card_index = dict()
-        for player_number in range(1, self.players_number + 1):
+        for player_number in self.players_numbers_lst:
             # print('Игрок',player_number, self.show_cards_list(self.pl[player_number].trumps_from_hand()))
             min_card_index[player_number] = self.pl[player_number].lowest_trump_from_hand()
         # Пробуем операцию мин
@@ -549,8 +551,8 @@ class Table:
         except (TypeError, ValueError):
             check_player = 0
             check_card = 0
-            for player_number in range(1, self.players_number + 1):
-                # если лист пуст ищем дальше по циклу
+            for player_number in self.players_numbers_lst:
+            # если лист пуст ищем дальше по циклу
                 if min_card_index[player_number] == []:
                     continue
                 # если список не пустой проверяем значение и записываем если больше
@@ -562,7 +564,7 @@ class Table:
                 min_card_player = check_player
             # Игрока с козырем нет - ищем _любую_ самую младшую карту у игроков (пики, крести, бубны, червы)
             else:
-                for playerNumber1 in range(1, self.players_number + 1):
+                for playerNumber1 in self.players_numbers_lst:
                     # print('Игрок',playerNumber1, self.show_cards_list(self.pl[playerNumber1].player_cards_onhand_list))
                     min_card_index[playerNumber1] = self.pl[playerNumber1].lowest_from_hand()
                 min_card_player = (min(min_card_index.items(), key=lambda x: x[1])[0])
@@ -571,23 +573,22 @@ class Table:
         return min_card_player, min_card_index[min_card_player]
 
 
-
     # Устанавливаем кол-во игроков
     def set_players(self):
         self.pl = dict()
-        # if self.players_number != 2:
-        #     print ("НЕ ГОТОВО для более чем 2-х игроков")
-        #     exit(1)
-        # else:
         #     # Иницианилизируем работу класса игроков и делаем их словарем
-        self.pl[1] = Player(1, 1)
         print(f'Кол-во игроков: {self.players_number}')
-        for i in range(2, self.players_number + 1):
-            self.pl[i] = Player(i, 2)
+        for i in self.players_numbers_lst:
+            if i == 1:
+                # self.pl[1] = Player(1, 1)
+                self.pl[1] = Player(1, 2)
+            else:
+                # Тип 2 - Компьютер
+                self.pl[i] = Player(i, 2)
 
     # Инициализируем словарь (массив) с деками игроков
     def table_init(self):
-        for player_number in range(1, self.players_number + 1):
+        for player_number in self.players_numbers_lst:
             # заносим в словари деки игроков
             self.pl[player_number].get_deck(self.playing_deck)
             self.pl[player_number].players_number = self.players_number
@@ -607,7 +608,7 @@ class Table:
         self.player_turn = player
         print(f'Ходит игрок №{player} {self.pl[player].player_name}, у него меньшая карта',
               self.pl[player].show_card(index))
-        for player_number in range(1, self.players_number + 1):
+        for player_number in self.players_numbers_lst:
             self.pl[player_number].change_card_status(index, 'P' + str(player))
 
     def set_table(self):
@@ -617,38 +618,63 @@ class Table:
         # print(self.hidden_playing_deck_order)
         # раздача
         for i in range(6):
-            for player_number in range(1, self.players_number + 1):
+            for player_number in self.players_numbers_lst:
                 # добавляем 1 карту каждому игроку
                 self.add_card_2player_hand(player_number)
         self.add_trump_card()
         self.show_first_turn_card()
 
+    # Нужно переставлять ход ДО вызова.
     def one_more_is_out (self, player_number):
-        # передвигаем записи, исключая выбывшего игрока
-        for i in range(1, self.players_number + 1):
-            if i >= player_number and i+1 < self.players_number:
-                self.pl[i] = self.pl[i+1]
+        if player_number == self.player_turn:
+            self.next_turn()
+        self.players_numbers_lst.remove(player_number)
         # уменьшаем кол-во игроков
-        self.players_number = self.players_number-1
+        self.players_number -= 1
         # переносим переход хода
-        if player_number > self.player_turn:
-            self.player_turn = self.previous_player(self.player_turn)
+        # self.player_turn = self.next_player(self.player_turn)
+
+    def if_player_hand_and_deck_empty (self, player_number):
+        if self.end_of_deck and (len(self.pl[player_number].player_cards_onhand_list) == 0):
+            if self.winner == 0:
+                self.winner = player_number
+            return True
+        else:
+            return False
+
+
+    def rem_cards_and_change_the_game (self,player_number):
+        # если есть карты на десктопе
+        # и карт четное кол-во (то-есть был отбой)
+        if len(self.desktop_list) > 0 and len(self.desktop_list) % 2 == 0:
+            print(f'Карты уходят в сброс', self.pl[player_number].show_cards_hor(self.desktop_list))
+            self.add_2graveyard(self.desktop_list)
+            # убираем карты с десктопа
+            self.rem_cards_from_desktop()
+            # Переход кона
+            # self.next_round()
+            # Переход хода
+            # self.next_turn()
+
+    # проверяем есть ли выигрывший и проигравший
+    def check_end_of_game(self):
+        if self.is_this_end_of_game():
+            self.congratulations()
+            exit(0)
 
     def is_this_end_of_game(self):
-        # Проверка окончания игры если 1 игрок закончил игру.
-        for player_number in range(1, self.players_number + 1):
-            if self.end_of_deck and (len(self.pl[player_number].player_cards_onhand_list) == 0):
-                print (f'Игрок № {player_number}, закагчивает игру. Остается {self.players_number-1} игроков')
-                if self.winner == 0:
-                    self.winner = player_number
+        # Проверка окончания игры если какой_либо игрок закончил игру.
+        result = False
+        for player_number in self.players_numbers_lst:
+            if self.if_player_hand_and_deck_empty(player_number):
+                print (f'Игрок № {player_number}, заканчивает игру. Остается {len(self.players_numbers_lst)-1} игроков')
+                self.show_desktop()
+                self.rem_cards_from_desktop()
                 if self.players_number == 2:
-                    self.looser = self.next_player(self.winner)
-                    return True
-                else:
-                    self.one_more_is_out (player_number)
-                return False
-            else:
-                return False
+                    self.looser = self.next_player(player_number)
+                    result = True
+                self.one_more_is_out(player_number)
+        return result
 
     def congratulations(self):
         print(f'Победитель игрок №{self.winner}')
@@ -657,17 +683,13 @@ class Table:
 # показать все карты на столе
     def show_all_cards(self, player_number):
         # Для теста
-        if self.is_this_end_of_game():
-            self.congratulations()
-            exit(0)
-
-        # for i in range(1, self.players_number + 1):
-        #     print(f'Игрок {i}', self.pl[i].show_cards_hor(self.pl[i].player_cards_onhand_list))
         self.if_human_pause(player_number)
-
+        for i in self.players_numbers_lst:
+            print(f'Игрок {i}', self.pl[i].show_cards_hor(self.pl[i].player_cards_onhand_list))
         print(f'Раунд № {self.game_round}')
         print('В колоде карт: ' + str(36 - self.hidden_deck_index))
         print(f'Заход игрока {self.player_turn}, {self.pl[self.player_turn].player_name}')
+        print(f'Отбой игрока {self.next_player(self.player_turn)}, {self.pl[self.next_player(self.player_turn)].player_name}')
         self.pl[1].show_trump()
         # self.pl[1].show_cards_vert_numbered(self.pl[1].player_cards_onhand_list)
         if len(self.desktop_list) > 0:
@@ -677,48 +699,30 @@ class Table:
             print('Стол пуст')
             print()
 
-
-
-        # Показываем набор карт человека
-        # if self.pl[self.next_player(self.player_turn)].player_type == 'Human' and (
-        #         (self.action == 'Attack' and self.result > 0) or (self.action == 'Defend' and self.result > 0) or (
-        #         self.action == 'Passive' and self.result > 0)):
-        #     print(f'Раунд № {self.game_round}')
-        #     self.pl[1].show_cards_vert_numbered(self.pl[1].player_cards_onhand_list)
-        #     print('0. Пас/забрать')
-        #     self.show_trump()
-        #     self.show_desktop()
-        # elif self.pl[self.previous_player(player_number)].player_type == 'Computer' and (
-        #         (self.action == 'Attack' and self.result > 0) or (self.action == 'Defend' and self.result > 0) or (
-        #         self.action == 'Passive' and self.result > 0)):
-        #     self.show_desktop()
-        # elif self.pl[player_number].player_type == 'Human' and (
-        #         (self.action == 'Attack' and self.result == 0) or (self.action == 'Defend' and self.result == 0) or (
-        #         self.action == 'Passive' and self.result == 0)):
-        #     print(f'Раунд № {self.game_round}')
-        #     self.pl[1].show_cards_vert_numbered(self.pl[1].player_cards_onhand_list)
-        #     print('0. Пас/забрать')
-        #     self.show_trump()
-        #     self.show_desktop()
+    def next_turn(self):
+        self.player_turn=self.next_player(self.player_turn)
+        for player_number in self.players_numbers_lst:
+            self.pl[player_number].change_player_turn(self.player_turn)
 
     def next_player(self, p_number):
-        if p_number + 1 > self.players_number:
-            p_number = 1
-            return self.players_numbers_lst[p_number]
+        # Индекс должен быть меньше чем в реальный player_number
+        index = self.players_numbers_lst.index(p_number)
+        if index + 1 > len(self.players_numbers_lst)-1:
+            index = 0
+            return self.players_numbers_lst[index]
         else:
-            p_number += 1
-            return self.players_numbers_lst[p_number]
+            index += 1
+            return self.players_numbers_lst[index]
 
     def previous_player(self, p_number):
-        if p_number - 1 == 0:
-            p_number = len(self.players_numbers_lst)
-            return self.players_numbers_lst[p_number]
+        index = self.players_numbers_lst.index(p_number)
+        if index - 1 == -1:
+            index = len(self.players_numbers_lst)-1
+            return self.players_numbers_lst[index]
         else:
-            p_number -= 1
-            return self.players_numbers_lst[p_number]
+            index -= 1
+            return self.players_numbers_lst[index]
 
-    def rem_player_from_list(self, p_number):
-        self.players_numbers_lst.remove[p_number]
 
     '''
     проверяем есть ли флаг {пасс} у атакующего игрока
@@ -736,7 +740,7 @@ class Table:
     '''
 
     def set_attack_player_pass_flag(self, flag):
-        for player_number in range(1, self.players_number + 1):
+        for player_number in self.players_numbers_lst:
             self.pl[player_number].attack_player_pass_flag = flag
 
     '''
@@ -778,34 +782,53 @@ class Table:
     def next_round(self):
         self.game_round += 1
         self.set_attack_player_pass_flag(False)
-        for player_number in range(1, self.players_number + 1):
+        for player_number in self.players_numbers_lst:
             self.set_passive_player_pass_flag(player_number, False)
-            for i in range(self.pl[player_number].check_hand_before_round()):
-                self.add_card_2player_hand(player_number)
+            if not self.end_of_deck:
+                for i in range(self.pl[player_number].check_hand_before_round()):
+                    self.add_card_2player_hand(player_number)
             # if self.end_of_deck and (len(self.pl[player_number].player_cards_onhand_list) == 0):
             #     print(f' Игрок №{player_number}, {self.pl[player_number].player_name} - победил')
             #     exit(player_number)
             self.pl[player_number].change_game_round(self.game_round)
             self.pl[player_number].change_player_turn(self.player_turn)
 
-    def next_turn(self):
-        if self.player_turn + 1 > self.players_number:
-            self.player_turn = 1
-        else:
-            self.player_turn += 1
-        for player_number in range(1, self.players_number + 1):
-            self.pl[player_number].change_player_turn(self.player_turn)
+        # if self.is_this_end_of_game():
+        #     self.congratulations()
+        #     exit(0)
+
 
     def if_human_pause(self, player_number):
+        # flag = False
+        # if self.end_of_deck:
+        #     for player_number in self.players_numbers_lst:
+        #         if len(self.pl[player_number].player_cards_onhand_list) < 2:
+        #             flag = True
+        # if flag:
+        #     time.sleep(2)
+        #     self.cls()
+
         if self.pl[player_number].player_type == 'Computer':
-            time.sleep(4)
+            time.sleep(2)
             self.cls()
         else:
-            time.sleep(4)
+            time.sleep(2)
             self.cls()
+
 
     def cls(self):
         print("\n" * 100)
+
+    def take_action (self, player_number):
+        if player_number == self.player_turn:
+            action = 'Attack'
+        # если ход + 1 равен наш номер - защищаемся, или наш номер 1-й в списке, а ходит последний в списке
+        elif (player_number == self.next_player(self.player_turn)) or (
+                self.player_turn == self.players_numbers_lst[self.players_number-1] and player_number == self.players_numbers_lst[0]):
+            action = 'Defend'
+        else:
+            action = 'Passive'
+        return action
 
     # Показать стол (передача хода здесь)
     def show_table(self):
@@ -832,17 +855,20 @@ class Table:
                 self.add_2graveyard(self.desktop_list)
                 # убираем карты с десктопа
                 self.rem_cards_from_desktop()
-                # Переход кона,
-                self.next_round()
                 # Переход хода
                 self.next_turn()
+                self.check_end_of_game()
+                # Переход кона,
+                self.next_round()
                 # Смена игрока и переход ему хода
                 player_number = self.player_turn
                 # self.if_human_pause(player_number)
             else:
                 self.show_all_cards(player_number)
+                self.pl[player_number].action = self.take_action(player_number)
                 self.action, self.result = self.pl[player_number].turn()
                 if self.action == 'Attack' and self.result > 0:
+                    self.attack_player_empty_hand_flag = False
                     self.pl[player_number].add_attack_status(self.result)
                     self.pl[player_number].player_cards_onhand_list.remove(self.result)
                     self.add_card_2desktop(self.result)
@@ -858,9 +884,10 @@ class Table:
                     # print ('PN',player_number, 'PT',self.player_turn)
                     # self.show_all_cards()
                     # self.if_human_pause(player_number)
+                    # if self.if_player_hand_and_deck_empty(player_number):
+                    #     self.attack_player_empty_hand_flag = True
                     continue
                 elif self.action == 'Attack' and self.result == 0:
-                    # print ('Десктоп', self.desktop_list)
                     # если всего 2 игрока
                     if self.players_number == 2:
                         # Карты уходят в сброс
@@ -870,11 +897,11 @@ class Table:
                         self.add_2graveyard(self.desktop_list)
                         # убираем карты с десктопа
                         self.rem_cards_from_desktop()
-                        # Переход кона,
-                        self.next_round()
                         # Переход хода
                         self.next_turn()
-                        # Перехода хода нет
+                        self.check_end_of_game()
+                        # Переход кона,
+                        self.next_round()
                         player_number = self.player_turn
                         continue
                     # Проверяем флаги, что мы уже пасовали
@@ -885,12 +912,14 @@ class Table:
                         self.add_2graveyard(self.desktop_list)
                         # убираем карты с десктопа
                         self.rem_cards_from_desktop()
-                        # Переход кона,
-                        self.next_round()
                         # Переход хода
                         self.next_turn()
+                        # если этот игрок
+                        self.check_end_of_game()
+                        # Переход кона,
+                        self.next_round()
                         # Смена игрока и переход ему хода
-                        player_number = self.next_player(player_number)
+                        player_number = self.player_turn
                         continue
                     # если в сброс карты не отправились, то....
                     elif self.players_number > 2:
@@ -912,42 +941,59 @@ class Table:
                     #     f'Игрок {player_number} {self.pl[player_number].player_name} отбивается - {self.pl[player_number].show_card(result)}')
                     print(f'Игрок {player_number} {self.pl[player_number].player_name} отбивается')
                     # print ('Десктоп', self.desktop_list)
-                    # передача по кругу следующему игроку
-                    player_number = self.next_player(player_number)
+
                     # print ('PN',player_number, 'PT',self.player_turn)
                     # self.if_human_pause(player_number)
+                    # если в руке больше нет карт на отбой и в колоде пусто ИЛИ
+                    # если нам не достанется ничего из колоды при раздаче и в руке нет больше карт на отбой
+                    # - мы выходим из игры и нас исключают из списка играющих. Остальные играют дальше
+                    # Переход хода идет на следующего игрока (следующего за отбивающимся)
+                    if self.if_player_hand_and_deck_empty(player_number) or (
+                            36 - self.hidden_deck_index < len(self.desktop_list) // 2 and (
+                            len(self.pl[player_number].player_cards_onhand_list) == 0)):
+                        if self.players_number != 2:
+                            self.next_turn()
+                        self.next_turn()
+                        self.check_end_of_game()
+                        self.next_round()
+                        player_number = self.player_turn
+                        continue
+                    # передача по кругу следующему игроку
+                    player_number = self.next_player(player_number)
                     continue
                 elif self.action == 'Defend' and self.result == 0:
                     # Если забираем карты (нет отбоя)
                     print(f'Игрок {player_number} {self.pl[player_number].player_name} забирает',
                           self.pl[player_number].show_cards_hor(self.desktop_list))
                     self.add_cardlist_2player_hand(player_number, self.desktop_list)
-                    # убираем карты с десктопа
-                    self.rem_cards_from_desktop()
+                    # проверяем на наличие карт
                     # если игроков 2 и пас то, если 2 игрока просто следующий кон,
                     # но игрок остается тот-же
                     if self.players_number == 2:
+                        self.check_end_of_game()
+                        # убираем карты с десктопа
+                        self.rem_cards_from_desktop()
                         # Переход кона,
                         self.next_round()
                         # Перехода хода нет - ход остается у прежнего игрока
                         # передаем ход ему обратно
                         player_number = self.player_turn
-                        continue
-                    if self.players_number > 2:
+                    elif self.players_number > 2:
                         # если игроков больше 2-х,
                         # смена раунда
+                        self.next_turn()
+                        self.next_turn()
+                        self.check_end_of_game()
+                        # убираем карты с десктопа
+                        self.rem_cards_from_desktop()
                         self.next_round()
                         # переход хода на 2 вперед. Мы забрали карты со стола
-                        self.next_turn()
-                        self.next_turn()
                         # ходить будет игрок которому передали ход
                         player_number = self.player_turn
-                        continue
                     # self.if_human_pause(player_number)
                     elif self.action == 'Defend' and self.result < 0:
                         # пропускаем ход (к пассивному игроку)
                         player_number = self.next_player(player_number)
-                        continue
                     # self.show_all_cards(player_number)
                     # self.action, self.result = self.pl[player_number].turn()
                     continue
@@ -982,6 +1028,7 @@ class Table:
                     # self.show_all_cards()
                     continue
                 elif self.action == 'Passive' and self.result < 0:
+                    print(f'Игрок {player_number} {self.pl[player_number].player_name} пропускает ход, ждем сигнал от атакующего')
                     self.set_passive_player_pass_flag(player_number, False)
                     player_number = self.next_player(player_number)
                     continue
@@ -989,6 +1036,6 @@ class Table:
 
 # Основное тело, перенести потом в инит часть логики
 if __name__ == '__main__':
-    fool_game = Table(3)
+    fool_game = Table(5)
     fool_game.set_table()
     fool_game.show_table()
