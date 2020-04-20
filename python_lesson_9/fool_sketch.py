@@ -241,24 +241,15 @@ class Player(Deck):
 
 
     #  это ход игрока
-    def turn(self):
-        # # если наш ход атакуем
-        # if self.player_number == self.player_turn:
-        #     self.action = 'Attack'
-        # # если ход + 1 равен наш номер - защищаемся, или наш номер 1-й в списке, а ходит последний в списке
-        # elif (self.player_number == self.player_turn + 1) or (
-        #         self.player_turn == self.players_number and self.player_number == 1):
-        #     self.action = 'Defend'
-        # else:
-        #     self.action = 'Passive'
-
+    def turn(self, action):
+        self.action = action
         if self.player_type == 'Computer':
             result = self.analyze()
         else:
             if (self.action == 'Attack') and (len(self.desktop_list) > 0):
                 if self.attack_player_pass_flag:
                     result = 0
-                    return self.action, 0
+                    return  result
                 attack_list = self.get_validated_attack_list()
                 while True:
                     card_number = self.ask_for_card()
@@ -273,7 +264,7 @@ class Player(Deck):
                     else:
                         result = 0
                         break
-                return self.action, result
+                return result
             elif (self.action == 'Attack') and (len(self.desktop_list) == 0):
                 card_number = self.ask_for_card()
                 if card_number > 0:
@@ -281,7 +272,7 @@ class Player(Deck):
                     # print (self.show_card(result))
                 else:
                     result = 0
-                return self.action, result
+                return result
 
             if (self.action == 'Defend') and (len(self.desktop_list) > 0):
                 defending_card = self.desktop_list[(len(self.desktop_list)) - 1]
@@ -300,7 +291,7 @@ class Player(Deck):
                     else:
                         result = 0
                         break
-                return self.action, result
+                return result
 
             if (self.action == 'Passive') and (len(self.desktop_list) > 0) and self.attack_player_pass_flag:
                 attack_list = self.get_validated_attack_list()
@@ -317,14 +308,14 @@ class Player(Deck):
                     else:
                         result = 0
                         break
-                return self.action, result
+                return result
             else:
                 # (self.action == 'Passive') and (len(self.desktop_list) == 0):
                 result = -1
                 return self.action, result
             # возвращаем действие и индекс карты (или пас/взять)
             result = -1
-        return self.action, result
+        return result
 
     def low_weight_card(self, c_list):
         if len(c_list) > 0:
@@ -458,7 +449,7 @@ class Table:
     # передаем индекс карты из списка self.hidden_playing_deck_order,
     # ссылаясь на индекс верхней карты колоды
     def current_card_index(self):
-        return self.hidden_playing_deck_order[self.hidden_deck_index]
+        return self.hidden_playing_deck_order[self.hidden_deck_index-1]
 
     # Пометить каждую карту из переданного списка,
     # в колоде каждого игрока как находящуюся в сбросе
@@ -502,10 +493,13 @@ class Table:
     # если не отбился, или из колоды после отбоя)
     def add_card_2player_hand(self, p_number):
         # Добавим карту в руку игрока
-        if self.hidden_deck_index != 36:
+        if self.hidden_deck_index < 37:
             self.pl[p_number].get_card(self.current_card_index())
-            # Индекс карты в дек листе меняем на следующую карту
-            self.hidden_deck_index += 1
+            if self.hidden_deck_index != 36:
+                # Индекс карты в дек листе меняем на следующую карту
+                self.hidden_deck_index += 1
+            else:
+                self.end_of_deck = True
         else:
             self.end_of_deck = True
 
@@ -531,7 +525,8 @@ class Table:
         self.hidden_playing_deck_order.remove(self.trump_index)
         self.hidden_playing_deck_order.append(self.trump_index)
         # Индекс карты в дек листе меняем на следующую карту
-        self.hidden_deck_index += 1
+        if self.hidden_deck_index < 36:
+            self.hidden_deck_index += 1
 
     # Выбор игрока с первым ходом
     # логика: сначалас ищем игрока с наименьшим козырем,
@@ -787,33 +782,26 @@ class Table:
             if not self.end_of_deck:
                 for i in range(self.pl[player_number].check_hand_before_round()):
                     self.add_card_2player_hand(player_number)
-            # if self.end_of_deck and (len(self.pl[player_number].player_cards_onhand_list) == 0):
-            #     print(f' Игрок №{player_number}, {self.pl[player_number].player_name} - победил')
-            #     exit(player_number)
             self.pl[player_number].change_game_round(self.game_round)
             self.pl[player_number].change_player_turn(self.player_turn)
 
-        # if self.is_this_end_of_game():
-        #     self.congratulations()
-        #     exit(0)
-
 
     def if_human_pause(self, player_number):
-        # flag = False
-        # if self.end_of_deck:
-        #     for player_number in self.players_numbers_lst:
-        #         if len(self.pl[player_number].player_cards_onhand_list) < 2:
-        #             flag = True
-        # if flag:
+        flag = False
+        if self.end_of_deck:
+            for player_number in self.players_numbers_lst:
+                if len(self.pl[player_number].player_cards_onhand_list) < 2:
+                    flag = True
+        if flag:
+            time.sleep(2)
+            self.cls()
+
+        # if self.pl[player_number].player_type == 'Computer':
         #     time.sleep(2)
         #     self.cls()
-
-        if self.pl[player_number].player_type == 'Computer':
-            time.sleep(2)
-            self.cls()
-        else:
-            time.sleep(2)
-            self.cls()
+        # else:
+        #     time.sleep(2)
+        #     self.cls()
 
 
     def cls(self):
@@ -865,8 +853,8 @@ class Table:
                 # self.if_human_pause(player_number)
             else:
                 self.show_all_cards(player_number)
-                self.pl[player_number].action = self.take_action(player_number)
-                self.action, self.result = self.pl[player_number].turn()
+                self.action = self.take_action(player_number)
+                self.result = self.pl[player_number].turn(self.action)
                 if self.action == 'Attack' and self.result > 0:
                     self.attack_player_empty_hand_flag = False
                     self.pl[player_number].add_attack_status(self.result)
@@ -1036,6 +1024,6 @@ class Table:
 
 # Основное тело, перенести потом в инит часть логики
 if __name__ == '__main__':
-    fool_game = Table(5)
+    fool_game = Table(2)
     fool_game.set_table()
     fool_game.show_table()
