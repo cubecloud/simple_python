@@ -448,7 +448,7 @@ class Table:
     # передаем индекс карты из списка self.hidden_playing_deck_order,
     # ссылаясь на индекс верхней карты колоды
     def current_card_index(self):
-        return self.hidden_playing_deck_order[self.hidden_deck_index-1]
+        return self.hidden_playing_deck_order[self.hidden_deck_index]
 
     # Пометить каждую карту из переданного списка,
     # в колоде каждого игрока как находящуюся в сбросе
@@ -492,12 +492,12 @@ class Table:
     # если не отбился, или из колоды после отбоя)
     def add_card_2player_hand(self, p_number):
         # Добавим карту в руку игрока
-        if self.hidden_deck_index < 37:
+        if self.hidden_deck_index <= 35 and not self.end_of_deck:
             self.pl[p_number].get_card(self.current_card_index())
-            if self.hidden_deck_index != 36:
-                # Индекс карты в дек листе меняем на следующую карту
-                self.hidden_deck_index += 1
-            else:
+            # Индекс карты в дек листе меняем на следующую карту
+            self.hidden_deck_index += 1
+            if self.hidden_deck_index == 36:
+                self.hidden_deck_index = 35
                 self.end_of_deck = True
         else:
             self.end_of_deck = True
@@ -524,7 +524,7 @@ class Table:
         self.hidden_playing_deck_order.remove(self.trump_index)
         self.hidden_playing_deck_order.append(self.trump_index)
         # Индекс карты в дек листе меняем на следующую карту
-        if self.hidden_deck_index < 36:
+        if self.hidden_deck_index < 35:
             self.hidden_deck_index += 1
 
     # Выбор игрока с первым ходом
@@ -574,8 +574,8 @@ class Table:
         print(f'Кол-во игроков: {self.players_number}')
         for i in self.players_numbers_lst:
             if i == 1:
-                self.pl[1] = Player(1, 1)
-                # self.pl[1] = Player(1, 2)
+                # self.pl[1] = Player(1, 1)
+                self.pl[1] = Player(1, 2)
             else:
                 # Тип 2 - Компьютер
                 self.pl[i] = Player(i, 2)
@@ -588,7 +588,7 @@ class Table:
             self.pl[player_number].players_number = self.players_number
         # устанавливаем индекс карты из колоды на 1
         # это индекс для ###### self.hidden_playing_deck_order ######
-        self.hidden_deck_index = 1
+        self.hidden_deck_index = 0
 
     # мешаем колоду
     def shuffle(self):
@@ -681,7 +681,7 @@ class Table:
         for i in self.players_numbers_lst:
             print(f'Игрок {i}', self.pl[i].show_cards_hor(self.pl[i].player_cards_onhand_list))
         print(f'Раунд № {self.game_round}')
-        print('В колоде карт: ' + str(36 - self.hidden_deck_index))
+        print('В колоде карт: ' + str(35 - self.hidden_deck_index))
         print(f'Заход игрока {self.player_turn}, {self.pl[self.player_turn].player_name}')
         print(f'Отбой игрока {self.next_player(self.player_turn)}, {self.pl[self.next_player(self.player_turn)].player_name}')
         self.pl[1].show_trump()
@@ -786,21 +786,21 @@ class Table:
 
 
     def if_human_pause(self, player_number):
-        # flag = False
-        # if self.end_of_deck:
-        #     for player_number in self.players_numbers_lst:
-        #         if len(self.pl[player_number].player_cards_onhand_list) < 2:
-        #             flag = True
-        # if flag:
+        flag = False
+        if self.end_of_deck:
+            for player_number in self.players_numbers_lst:
+                if len(self.pl[player_number].player_cards_onhand_list) < 2:
+                    flag = True
+        if flag:
+            time.sleep(2)
+            self.cls()
+
+        # if self.pl[player_number].player_type == 'Computer':
         #     time.sleep(2)
         #     self.cls()
-
-        if self.pl[player_number].player_type == 'Computer':
-            time.sleep(2)
-            self.cls()
-        else:
-            time.sleep(2)
-            self.cls()
+        # else:
+        #     time.sleep(2)
+        #     self.cls()
 
 
     def cls(self):
@@ -935,8 +935,8 @@ class Table:
                     # если нам не достанется ничего из колоды при раздаче и в руке нет больше карт на отбой
                     # - мы выходим из игры и нас исключают из списка играющих. Остальные играют дальше
                     # Переход хода идет на следующего игрока (следующего за отбивающимся)
-                    if self.if_player_hand_and_deck_empty(player_number) or (
-                            36 - self.hidden_deck_index < len(self.desktop_list) // 2 and (
+                    if self.if_player_hand_and_deck_empty(player_number) or ((
+                            35 - self.hidden_deck_index) < len(self.desktop_list) // 2 and (
                             len(self.pl[player_number].player_cards_onhand_list) == 0)):
                         if self.players_number != 2:
                             self.next_turn()
@@ -1023,6 +1023,6 @@ class Table:
 
 # Основное тело, перенести потом в инит часть логики
 if __name__ == '__main__':
-    fool_game = Table(3)
+    fool_game = Table(6)
     fool_game.set_table()
     fool_game.show_table()
