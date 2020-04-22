@@ -1,3 +1,17 @@
+#  Copyright (c) 2020. Oleg Novokshonov
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 from random import choice, shuffle
 import copy
 import time
@@ -115,9 +129,6 @@ class Deck:
             self.suits_icons[self.what_suit(index)][0:]) + f'{colortext.end}'
         return output
 
-    # # возвращает из руки карту с наименьшим индексом
-    # def lowest_from_hand(self, c_list):
-    #     return min(c_list)
 
     def show_cards_hor(self, c_list):
         output = str()
@@ -135,13 +146,14 @@ class Deck:
 
 class Player(Deck):
     def __init__(self, N, player_type):
+
         self.player_number = N
         self.player_types = {1: 'Human', 2: 'Computer'}
         self.player_type = self.player_types[player_type]
         # если человек то запрашиваем имя
         if self.player_type == self.player_types[1]:
-            self.player_name = self.player_types[player_type]
-            # self.ask_for_name(self.player_number)
+            # self.player_name = self.player_types[player_type]
+            self.ask_for_name()
         else:
             self.player_name = 'Computer №' + str(self.player_number)
         self.player_cards_onhand_list = list()
@@ -574,8 +586,8 @@ class Table:
         print(f'Кол-во игроков: {self.players_number}')
         for i in self.players_numbers_lst:
             if i == 1:
-                # self.pl[1] = Player(1, 1)
-                self.pl[1] = Player(1, 2)
+                self.pl[1] = Player(1, 1)
+                # self.pl[1] = Player(1, 2)
             else:
                 # Тип 2 - Компьютер
                 self.pl[i] = Player(i, 2)
@@ -676,10 +688,10 @@ class Table:
 
 # показать все карты на столе
     def show_all_cards(self, player_number):
-        # Для теста
         self.if_human_pause(player_number)
-        for i in self.players_numbers_lst:
-            print(f'Игрок {i}', self.pl[i].show_cards_hor(self.pl[i].player_cards_onhand_list))
+        # Для теста
+        # for i in self.players_numbers_lst:
+        #     print(f'Игрок {i}', self.pl[i].show_cards_hor(self.pl[i].player_cards_onhand_list))
         print(f'Раунд № {self.game_round}')
         print('В колоде карт: ' + str(35 - self.hidden_deck_index))
         print(f'Заход игрока {self.player_turn}, {self.pl[self.player_turn].player_name}')
@@ -786,21 +798,21 @@ class Table:
 
 
     def if_human_pause(self, player_number):
-        flag = False
-        if self.end_of_deck:
-            for player_number in self.players_numbers_lst:
-                if len(self.pl[player_number].player_cards_onhand_list) < 2:
-                    flag = True
-        if flag:
+        # flag = False
+        # if self.end_of_deck:
+        #     for player_number in self.players_numbers_lst:
+        #         if len(self.pl[player_number].player_cards_onhand_list) < 2:
+        #             flag = True
+        # if flag:
+        #     time.sleep(2)
+        #     self.cls()
+
+        if self.pl[player_number].player_type == 'Computer':
+            time.sleep(3)
+            self.cls()
+        else:
             time.sleep(2)
             self.cls()
-
-        # if self.pl[player_number].player_type == 'Computer':
-        #     time.sleep(2)
-        #     self.cls()
-        # else:
-        #     time.sleep(2)
-        #     self.cls()
 
 
     def cls(self):
@@ -861,7 +873,7 @@ class Table:
                     self.add_card_2desktop(self.result)
                     # print(f'Ход игрока {player_number} {self.pl[player_number].player_name} - {self.pl[player_number].show_card(result)}')
                     print(
-                        f'Ход игрока {player_number} {self.pl[player_number].player_name} под игрока {self.next_player(player_number)}')
+                        f'Ход игрока {player_number} {self.pl[player_number].player_name} под игрока {self.next_player(player_number)} {self.pl[player_number].show_card(self.result)}')
                     # print (f'Атака игрока {player_number}',self.pl[player_number].show_card(result))
                     # print ('Десктоп', self.desktop_list)
                     # передача по кругу следующему игроку
@@ -926,7 +938,7 @@ class Table:
                     self.add_card_2desktop(self.result)
                     # print(
                     #     f'Игрок {player_number} {self.pl[player_number].player_name} отбивается - {self.pl[player_number].show_card(result)}')
-                    print(f'Игрок {player_number} {self.pl[player_number].player_name} отбивается')
+                    print(f'Игрок {player_number} {self.pl[player_number].player_name} отбивается {self.pl[player_number].show_card(self.result)}')
                     # print ('Десктоп', self.desktop_list)
 
                     # print ('PN',player_number, 'PT',self.player_turn)
@@ -991,7 +1003,7 @@ class Table:
                     self.pl[player_number].player_cards_onhand_list.remove(self.result)
                     self.add_card_2desktop(self.result)
                     # print(f'Подброс от игрока {player_number} - {self.pl[player_number].show_card(result)}')
-                    print(f'Подброс от игрока {player_number}')
+                    print(f'Подброс от игрока {player_number} {self.pl[player_number].show_card(self.result)}')
                     # print ('Десктоп', self.desktop_list)
                     # Пассивный игрок сходил, ставим флаг
                     self.set_passive_player_pass_flag(player_number, False)
@@ -1023,6 +1035,15 @@ class Table:
 
 # Основное тело, перенести потом в инит часть логики
 if __name__ == '__main__':
-    fool_game = Table(6)
+    while True:
+        try:
+            players_number = int(input(f'Введите кол-во игроков 2-6>'))
+            if players_number > 6 or players_number < 2:
+                print("Неправильный ввод")
+                continue
+            break
+        except (TypeError, ValueError):
+            print("Неправильный ввод")
+    fool_game = Table(players_number)
     fool_game.set_table()
     fool_game.show_table()
