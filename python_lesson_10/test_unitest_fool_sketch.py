@@ -2,7 +2,6 @@ import sys
 import unittest
 from fool_sketch import Table, Deck
 
-
 class TestTable(unittest.TestCase):
 
     def setUp(self):
